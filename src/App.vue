@@ -11,7 +11,9 @@ import { loadRhino } from "@/scripts/compute.js";
 import Header from "./components/Header.vue"
 import GeometryView from "./components/GeometryView.vue"
 import SliderInput from "./components/SliderInput.vue"
+import ButtonInput from "./components/ButtonInput.vue"
 import Upload3dm from "./components/Upload3dm.vue"
+
 
 
 import def from './assets/rhino_input.gh' //import Grasshopper definition for assets
@@ -28,6 +30,7 @@ const encodedFile = ref(null);
 let path = def //path to the Grasshopper definition
 let data = ref({})
 let metadata = ref([])
+let compute = ref(false)
 
 
 function updateValue(newValue, parameterName) {
@@ -45,14 +48,20 @@ function updateValue(newValue, parameterName) {
 }
 
 function update3dmData(newData) {
-  encodedFile.value = newData;
+  encodedFile.value = newData
 }
 
 
 //receive metadata from GeometryView component
 function receiveMetedata(newMetadata) {
-  console.log(newMetadata);
-  metadata.value = newMetadata;
+  metadata.value = newMetadata
+  runCompute.value = false
+}
+
+function runCompute(newVal){
+
+  compute.value = newVal
+
 }
 
 // a computed ref. Vue will keep track of this and update it
@@ -99,6 +108,9 @@ with data, objects, functions etc. -->
           @update="updateValue"></SliderInput>
 
 
+          <ButtonInput title="Generate!" v-on:click="runCompute" />
+
+
     </div>
       
     <div id="viewer" class="container">
@@ -106,6 +118,7 @@ with data, objects, functions etc. -->
       <GeometryView
       :data="computeData"
       :path="path"
+      :runCompute="compute"
       @updateMetadata="receiveMetedata"
       />
 
