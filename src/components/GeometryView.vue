@@ -8,7 +8,7 @@
 
 <script setup>
 // Imports;
-import { onMounted, onUpdated, computed } from 'vue'
+import { onMounted, onUpdated, watch } from 'vue'
 import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { Rhino3dmLoader } from "three/addons/loaders/3DMLoader.js"
@@ -20,8 +20,16 @@ const loader = new Rhino3dmLoader()
 loader.setLibraryPath('https://cdn.jsdelivr.net/npm/rhino3dm@8.0.0-beta2/')
 
 
-const props = defineProps(["data", "path"]);
+const props = defineProps(["data", "path", "runCompute"]);
 const emits = defineEmits(["updateMetadata"]);  
+
+
+watch(() => props.runCompute, (newValue) => {
+  if (newValue) {
+    compute();
+  }
+})
+
 
 // Three js objects
 let renderer, camera, scene,  controls, container
@@ -194,17 +202,19 @@ controls.update();
 }
 
 
+
 // This will be run whenever this component is instantiated
 onMounted(async() => {
   init()
   await loadRhino()
-  compute();
+  // compute();
 })
 
 //onUpdated is called when an input prop is changed
-onUpdated(() => {
-  compute();
-})
+// this runs compute whenever the input data changes
+// onUpdated(() => {
+//   compute();
+// })
 
 
 

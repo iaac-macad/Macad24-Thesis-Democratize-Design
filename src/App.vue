@@ -11,7 +11,7 @@ import { loadRhino } from "@/scripts/compute.js";
 import Header from "./components/Header.vue"
 import GeometryView from "./components/GeometryView.vue"
 import SliderInput from "./components/SliderInput.vue"
-import ButtonInput from "./components/ButtonInput.vue"
+import ComputeButton from "./components/ComputeButton.vue"
 import Upload3dm from "./components/Upload3dm.vue"
 
 
@@ -34,7 +34,6 @@ let compute = ref(false)
 
 
 function updateValue(newValue, parameterName) {
-  console.log(parameterName)
 
   if (parameterName === firstSliderName.value) {
     firstSliderValue.value = newValue
@@ -42,9 +41,9 @@ function updateValue(newValue, parameterName) {
   
   else if (parameterName === secondSliderName.value) {
     secondSliderValue.value = newValue
-    console.log(secondSliderValue.value)
   }
   
+  console.log( parameterName + " : " + newValue)
 }
 
 function update3dmData(newData) {
@@ -75,8 +74,7 @@ const computeData = computed(() => {
   return data
 })
 
-onBeforeMount( () => {
-})
+
 
 </script>
 
@@ -108,7 +106,7 @@ with data, objects, functions etc. -->
           @update="updateValue"></SliderInput>
 
 
-          <ButtonInput title="Generate!" v-on:click="runCompute" />
+          <ComputeButton title="Compute" @click="runCompute" />
 
 
     </div>
