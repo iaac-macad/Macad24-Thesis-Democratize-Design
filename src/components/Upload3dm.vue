@@ -1,8 +1,8 @@
 <template>
     <div>
 
-        <input type="file" @change="handleFileUpload" />
-        <button v-if="selectedFile" @click="uploadFile">Upload File</button>
+        <input type="file" @change="uploadFile" />
+        <!-- <button v-if="selectedFile" @click="uploadFile">Upload File</button> -->
 
 
         <!-- <div class="button">
@@ -26,12 +26,15 @@ const emits = defineEmits(['encoded3dm']);
 const selectedFile = ref(null);
 
 const handleFileUpload = event => {
-    selectedFile.value = event.target.files[0];
+    
 };
 
-const uploadFile = async () => {
+const uploadFile = async (event) => {
+    selectedFile.value = event.target.files[0];
     if (!selectedFile.value) {
         return;
+    }else{
+        console.log(selectedFile.value);
     }
 
 
