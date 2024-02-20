@@ -24,7 +24,8 @@ let firstSliderValue = ref(10) //default slider value
 let secondSliderName = ref("Count") //must match the Input name in your GH definition!
 let secondSliderValue = ref(10) //default slider value
 
-const encodedFile = ref(null);
+let encodedFile = ref(null);
+let isButtonDisabled = ref(true)
 
 ///.............................................
 let path = def //path to the Grasshopper definition
@@ -48,6 +49,8 @@ function updateValue(newValue, parameterName) {
 
 function update3dmData(newData) {
   encodedFile.value = newData
+  isButtonDisabled.value = false
+  
 }
 
 
@@ -81,7 +84,7 @@ const computeData = computed(() => {
 <!-- Template is a HTML-based syntax that allows you to bind the rendered DOM elements
 with data, objects, functions etc. -->
 <template>
-  <Header title="Digital Tools for Cloud-based Data Management - Session 04 - Compute"></Header>
+  <Header title="Digital Tools for Cloud-based Data Management - Session 06 - File Input"></Header>
 
   <div id="content">
     <div id="sidebar" class="container">
@@ -109,7 +112,7 @@ with data, objects, functions etc. -->
           <ComputeButton 
           title="Compute" 
           @click="runCompute" 
-          
+          :isDisabled="isButtonDisabled"
           />
 
 

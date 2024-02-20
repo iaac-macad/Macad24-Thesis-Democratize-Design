@@ -1,18 +1,15 @@
 <template>
-    <div>
-
-        <input name="uploadfile"  type="file" @change="uploadFile" />
-        <!-- <button v-if="selectedFile" @click="uploadFile">Upload File</button> -->
 
 
-        <!-- <div class="button">
+    
+        <div class="button">
             <label for='upload3dm' class='customUpload'
-              title="Upload the preprocessed .3dm model to calculate the coverage of the sensors">Upload 3dm</label>
-            <input type="file" accept=".3dm" id="upload3dm" hidden />
-            <span id="3dm-chosen" class="fileText">No file chosen</span>
-          </div> -->
+              title="Upload a .3dm model"> upload 3dm </label>
+            <input type="file" accept=".3dm" id="upload3dm" @change="uploadFile" hidden />
+            <span id="3dm-chosen" class="fileText">{{selectedFileName}}</span>
+        </div>
 
-    </div>
+
 </template>
   
 <script setup>
@@ -25,6 +22,9 @@ const emits = defineEmits(['encoded3dm']);
 
 const selectedFile = ref(null);
 
+const selectedFileName = ref("");
+
+
 const uploadFile = async (event) => {
     selectedFile.value = event.target.files[0];
     if (!selectedFile.value) {
@@ -36,6 +36,7 @@ const uploadFile = async (event) => {
 
     // get file
     let  file = selectedFile.value
+    selectedFileName.value = file.name;
 
     // try to open 3dm file
     const buffer3dm = await file.arrayBuffer()
@@ -52,5 +53,8 @@ const uploadFile = async (event) => {
 </script>
   
 <style scoped>
-/* Add styles here if needed */
+  .customUpload {
+    background-color: var(--pink);
+  }
+
 </style>

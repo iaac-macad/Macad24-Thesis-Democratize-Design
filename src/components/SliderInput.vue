@@ -47,7 +47,7 @@ function emitValueUpdate()
 .modern-range {
   -webkit-appearance: none;
   width: 100%;
-  background: linear-gradient(90deg, hsl(0, 0%, 100%), #eb487c);
+  background: linear-gradient(90deg, #fce1e9, #eb487c);
   height: 17px;
   border-radius: 15px;
   margin: 10px 0px;
@@ -58,7 +58,7 @@ function emitValueUpdate()
   height: 15px;
   width: 15px;
   border-radius: 15px;
-  background-color: black;
+  background-color: white;
   cursor: pointer;
 }
 </style>

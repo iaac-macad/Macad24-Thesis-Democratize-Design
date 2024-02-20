@@ -1,7 +1,17 @@
-button {
-    background-color: #6fb8ff;
-    border: #6fb8ff;
-    color: black;
+:root {
+  --blue: #1897ff;
+  --darkblue: #007ffd;
+  --pink: #f183a6;
+  --darkpink: #fa2669;
+
+}
+
+button,   .customUpload {
+    font-family: 'Roboto Mono', monospace;
+    background-color: var(--pink);
+    border: var(--blue);
+    color: white;
+    font-weight: bold;
     padding: 10px 15px;
     text-align: center;
     text-decoration: none;
@@ -9,15 +19,23 @@ button {
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
-    border-radius: 18px;
-    transition: all 0.3s ease-in-out;
+    border-radius: 10px;
+    transition: all 0.1s ease-in-out;
+    
   }
+
+
   
-  button:hover {
-    background-color: #1E90FF;
-    box-shadow: 3px 3px black;
+  button:hover,  .customUpload:hover {
+    background-color: var(--darkpink);
+    box-shadow: 3px 3px rgb(46, 46, 46);
   }
 
 
-
+  .fileText {
+    font-family: 'Roboto Mono', monospace;
+    color: white;
+    padding: 1px 5px;
+    font-size: 14px;
+  }
   
