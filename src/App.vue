@@ -106,7 +106,11 @@ with data, objects, functions etc. -->
           @update="updateValue"></SliderInput>
 
 
-          <ComputeButton title="Compute" @click="runCompute" />
+          <ComputeButton 
+          title="Compute" 
+          @click="runCompute" 
+          
+          />
 
 
     </div>

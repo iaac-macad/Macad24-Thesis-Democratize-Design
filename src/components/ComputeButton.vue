@@ -4,7 +4,6 @@
     @mousedown="onButtonClick(true)"
     @mouseup="onButtonClick(false)"
     
-    
     >{{ titlec }}</button>
   </div>
 </template>
