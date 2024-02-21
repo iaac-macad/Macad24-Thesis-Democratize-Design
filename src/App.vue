@@ -7,6 +7,7 @@ import Loading from 'commonComponents/Loading.vue'
 import WelcomePage from 'commonComponents/WelcomePage.vue'
 import StudentA from "./submissions/studentA/StudentA.vue";
 import StudentB from "./submissions/studentB/StudentB.vue";
+import StudentC from "./submissions/studentC/StudentC.vue";
 
 // PINIA STORE
 import { store } from './stores/storeSingletons'
@@ -14,7 +15,8 @@ import { store } from './stores/storeSingletons'
 
 var submissions = [
   { name: "Student A", visible: ref(false) },
-  { name: "Student B", visible: ref(false) }
+  { name: "Student B", visible: ref(false) },
+  { name: "Student C", visible: ref(false) }
 ];
 
 
@@ -85,6 +87,7 @@ onMounted(() => {
     <WelcomePage v-if="aboutPageVisible"></WelcomePage>
     <StudentA v-if="submissions[0].visible.value"></StudentA>
     <StudentB v-if="submissions[1].visible.value"></StudentB>
+    <StudentC v-if="submissions[2].visible.value"></StudentC>
   </div>
 </div>
 
