@@ -122,14 +122,14 @@ async function compute() {
 
     scene.add(object)
 
-    // // zoom to extents
-    // for (let child of scene.children) {
-    //     if (child.type == "Object3D") {
-    //       // zoom to extents
-    //       zoomCameraToSelection(camera, controls, child.children)
+    // zoom to extents
+    for (let child of scene.children) {
+        if (child.type == "Object3D") {
+          // zoom to extents
+          zoomCameraToSelection(camera, controls, child.children)
 
-    //     }
-    //   }
+        }
+      }
       
 
     console.log("Compute done")

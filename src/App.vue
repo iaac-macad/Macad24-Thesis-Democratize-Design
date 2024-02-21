@@ -12,6 +12,7 @@ import Header from "./components/Header.vue"
 import GeometryView from "./components/GeometryView.vue"
 import SliderInput from "./components/SliderInput.vue"
 import ComputeButton from "./components/ComputeButton.vue"
+import DropdownSelector from "./components/DropdownSelector.vue"
 import Upload3dm from "./components/Upload3dm.vue"
 
 
@@ -26,6 +27,18 @@ let secondSliderValue = ref(1) //default slider value
 
 let thirdSliderName = ref("Z") //must match the Input name in your GH definition!
 let thirdSliderValue = ref(1) //default slider value
+
+let dropdownName = ref("Type")
+let dropdownIndex = ref(0)
+
+const dropdownOptions = [
+  { label: "Mesh", value: 0 },
+  { label: "Brep", value: 1},
+  { label: "SubD", value: 2 },
+  { label: "Curve", value: 3 },
+  
+];
+
 
 let encodedFile = ref(null);
 let isButtonDisabled = ref(true)
@@ -50,7 +63,11 @@ function updateValue(newValue, parameterName) {
   else if (parameterName === thirdSliderName.value) {
     thirdSliderValue.value = newValue
   }
-  
+
+  else if (parameterName === dropdownName.value) {
+    dropdownIndex.value = newValue
+  }
+
   console.log( parameterName + " : " + newValue)
 }
 
@@ -80,7 +97,8 @@ const computeData = computed(() => {
     ["encodedFile"]: encodedFile.value, 
     [firstSliderName.value]: Number(firstSliderValue.value),
     [secondSliderName.value]: Number(secondSliderValue.value),
-    [thirdSliderName.value]: Number(thirdSliderValue.value)
+    [thirdSliderName.value]: Number(thirdSliderValue.value),
+    [dropdownName.value]: Number(dropdownIndex.value)
   };
 
   return data
@@ -125,11 +143,18 @@ with data, objects, functions etc. -->
           :val = "thirdSliderValue"
           @update="updateValue"></SliderInput>
 
+          <DropdownSelector 
+          :title="dropdownName" 
+          :options="dropdownOptions" 
+          :val="dropdownIndex" 
+          @update="updateValue"
+          />
 
           <ComputeButton 
           title="Compute" 
           @click="runCompute" 
           :isDisabled="isButtonDisabled"
+
           />
 
 
