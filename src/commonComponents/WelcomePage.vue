@@ -21,7 +21,7 @@ var submissions = [
         <h2 class="home-page-titles">Faculty assistant</h2>
         <p class="names">Sophie Moore</p>
 
-        <h2 class="home-page-titles">BIMSC23 module</h2>
+        <h2 class="home-page-titles">BIMSC24 module</h2>
         <ul class="student-list">
             <li v-for="(item, index) in submissions" :key="index">
             {{ item.name }}

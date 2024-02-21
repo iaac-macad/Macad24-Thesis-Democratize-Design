@@ -8,7 +8,7 @@
 
 <script setup>
 // Imports;
-import { onMounted, onUpdated, computed } from 'vue'
+import { onMounted, onUpdated, watch } from 'vue'
 import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { Rhino3dmLoader } from "three/addons/loaders/3DMLoader.js"
@@ -16,13 +16,19 @@ import { runCompute } from "@/scripts/compute.js"
 import { loadRhino } from "@/scripts/compute.js";
 
 
-import ButtonInput from "./ButtonInput.vue"
-
 const loader = new Rhino3dmLoader()
 loader.setLibraryPath('https://cdn.jsdelivr.net/npm/rhino3dm@8.0.0-beta2/')
 
 
-const props = defineProps(["data", "path"]);
+const props = defineProps(["data", "path", "runCompute"]);
+const emits = defineEmits(["updateMetadata"]);  
+
+
+watch(() => props.runCompute, (newValue) => {
+  if (newValue) {
+    compute();
+  }
+})
 
 
 // Three js objects
@@ -53,10 +59,14 @@ function init() {
   // orbit controls
   controls = new OrbitControls(camera, renderer.domElement)
 
-
-
   // add some ambient light here
+  const ambientlight = new THREE.AmbientLight(0xffffff, 1)
+  ambientlight.position.set(0, 0, 0)
+  scene.add(ambientlight)
 
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
+  directionalLight.position.set(0, 1, 0)
+  scene.add(directionalLight)
 
 
   // add fun shape
@@ -68,6 +78,10 @@ function init() {
 async function compute() {
   console.log("Runnning compute... \ndata sent: ", props.data)
   const doc = await runCompute(props.data, props.path)
+
+  if (doc.metadata) {
+    emits("updateMetadata", doc.metadata);
+  }
 
   // clear objects from scene
   scene.traverse((child) => {
@@ -81,17 +95,44 @@ async function compute() {
   loader.parse(buffer, function (object) {
     ///////////////////////////////////////////////////////////////////////
     // add object graph from rhino model to three.js scene
-
-    let material = new THREE.MeshNormalMaterial()
-
     object.traverse((child) => {
-      if (child.isMesh) {
-        child.material = material
+
+      // console.log(child)
+
+      if (child.isLine) {
+
+        // console.log(child)
+          
+        if (child.userData.attributes.userStrings!= undefined && child.userData.attributes.userStrings.length > 0) {
+            //get color from userStrings
+            const colorData = child.userData.attributes.userStrings[0]
+            const col = colorData[1]
+
+            //convert color from userstring to THREE color and assign it
+            const threeColor = new THREE.Color("rgb(" + col + ")")
+            const mat = new THREE.LineBasicMaterial({ color: threeColor })
+            child.material = mat
+
+        }
+
+
+
       }
     })
 
 
-    scene.add(object);
+    scene.add(object)
+
+    // zoom to extents
+    for (let child of scene.children) {
+        if (child.type == "Object3D") {
+          // zoom to extents
+          zoomCameraToSelection(camera, controls, child.children)
+
+        }
+      }
+      
+
     console.log("Compute done")
   });
 }
@@ -124,18 +165,56 @@ function onWindowResize() {
 
 }
 
+/**
+ * Helper function that behaves like rhino's "zoom to selection", but for three.js!
+ */
+ function zoomCameraToSelection(camera, controls, selection, fitOffset = 1.1) {
+
+const box = new THREE.Box3();
+
+for (const object of selection) {
+  if (object.isLight) continue
+  box.expandByObject(object);
+}
+
+const size = box.getSize(new THREE.Vector3());
+const center = box.getCenter(new THREE.Vector3());
+
+const maxSize = Math.max(size.x, size.y, size.z);
+const fitHeightDistance = maxSize / (2 * Math.atan(Math.PI * camera.fov / 360));
+const fitWidthDistance = fitHeightDistance / camera.aspect;
+const distance = fitOffset * Math.max(fitHeightDistance, fitWidthDistance);
+
+const direction = controls.target.clone()
+  .sub(camera.position)
+  .normalize()
+  .multiplyScalar(distance);
+controls.maxDistance = distance * 10;
+controls.target.copy(center);
+
+camera.near = distance / 100;
+camera.far = distance * 100;
+camera.updateProjectionMatrix();
+camera.position.copy(controls.target).sub(direction);
+
+controls.update();
+
+}
+
+
 
 // This will be run whenever this component is instantiated
 onMounted(async() => {
   init()
   await loadRhino()
-  compute();
+  // compute();
 })
 
-//onUpdated is called when an input prop is changed
-onUpdated(() => {
-  compute();
-})
+// //onUpdated is called when an input prop is changed
+// // this runs compute whenever the input data changes
+// onUpdated(() => {
+//   compute();
+// })
 
 
 

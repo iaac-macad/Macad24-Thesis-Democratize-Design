@@ -3,8 +3,8 @@
 import { ref, onMounted } from "vue";
 import { loadRhino } from "@/scripts/compute.js";
 
-import Loading from './components/Loading.vue'
-import WelcomePage from './components/WelcomePage.vue'
+import Loading from 'commonComponents/Loading.vue'
+import WelcomePage from 'commonComponents/WelcomePage.vue'
 import StudentA from "./submissions/studentA/StudentA.vue";
 import StudentB from "./submissions/studentB/StudentB.vue";
 
@@ -81,18 +81,18 @@ onMounted(() => {
 </div>
 
 <div>
-  <div class="content">
+  <div id="content">
     <WelcomePage v-if="aboutPageVisible"></WelcomePage>
     <StudentA v-if="submissions[0].visible.value"></StudentA>
     <StudentB v-if="submissions[1].visible.value"></StudentB>
   </div>
 </div>
 
-<div v-if="store.computing" class="loading-overlay">
+<!-- <div v-if="store.computing" class="loading-overlay">
   <div class="loading-container"> 
     <Loading />
   </div>
-</div>
+</div> -->
 
 </template>
 
@@ -103,11 +103,10 @@ body {
 }
 
 #app {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  
 }
 
 #top-bar {
@@ -135,9 +134,11 @@ body {
   margin:0px;
   padding:0px;
 }
-.content {
-  display: flex;
-  max-height: calc(100vh - 82px);
+
+#content{
+    
+    display: flex;
+    height: calc(100vh - 68px);
 }
 
 .logo-image {
@@ -160,14 +161,6 @@ h2 {
   font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: 0.01em;
-}
-
-.container {
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-  overflow: hidden;
-  margin: 10px 0px;
 }
 
 .menu {

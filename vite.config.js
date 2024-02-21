@@ -14,7 +14,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      'commonComponents': fileURLToPath(new URL('./src/commonComponents', import.meta.url))
     }
   },
   assetsInclude: ['**/*.gh', '**/*.3dm'],
