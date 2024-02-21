@@ -18,11 +18,14 @@ import Upload3dm from "./components/Upload3dm.vue"
 
 import def from './assets/rhino_input.gh' //import Grasshopper definition for assets
 
-let firstSliderName = ref("Radius") //must match the Input name in your GH definition!
-let firstSliderValue = ref(10) //default slider value
+let firstSliderName = ref("X") //must match the Input name in your GH definition!
+let firstSliderValue = ref(1) //default slider value
 
-let secondSliderName = ref("Count") //must match the Input name in your GH definition!
-let secondSliderValue = ref(10) //default slider value
+let secondSliderName = ref("Y") //must match the Input name in your GH definition!
+let secondSliderValue = ref(1) //default slider value
+
+let thirdSliderName = ref("Z") //must match the Input name in your GH definition!
+let thirdSliderValue = ref(1) //default slider value
 
 let encodedFile = ref(null);
 let isButtonDisabled = ref(true)
@@ -42,6 +45,10 @@ function updateValue(newValue, parameterName) {
   
   else if (parameterName === secondSliderName.value) {
     secondSliderValue.value = newValue
+  }
+
+  else if (parameterName === thirdSliderName.value) {
+    thirdSliderValue.value = newValue
   }
   
   console.log( parameterName + " : " + newValue)
@@ -72,7 +79,8 @@ const computeData = computed(() => {
   data = {
     ["encodedFile"]: encodedFile.value, 
     [firstSliderName.value]: Number(firstSliderValue.value),
-    [secondSliderName.value]: Number(secondSliderValue.value)
+    [secondSliderName.value]: Number(secondSliderValue.value),
+    [thirdSliderName.value]: Number(thirdSliderValue.value)
   };
 
   return data
@@ -98,7 +106,7 @@ with data, objects, functions etc. -->
           :min = "1"
           :max = "10"
           :step = "1"
-          :val = "5"
+          :val = "firstSliderValue"
           @update="updateValue"></SliderInput>
 
           <SliderInput 
@@ -106,7 +114,15 @@ with data, objects, functions etc. -->
           :min = "1"
           :max = "10"
           :step = "1"
-          :val = "5"
+          :val = "secondSliderValue"
+          @update="updateValue"></SliderInput>
+
+          <SliderInput 
+          :title="thirdSliderName"
+          :min = "1"
+          :max = "10"
+          :step = "1"
+          :val = "thirdSliderValue"
           @update="updateValue"></SliderInput>
 
 

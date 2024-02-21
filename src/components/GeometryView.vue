@@ -97,40 +97,39 @@ async function compute() {
     // add object graph from rhino model to three.js scene
     object.traverse((child) => {
 
-      // console.log(child)
-
-      if (child.isLine) {
-
-        // console.log(child)
-          
-        if (child.userData.attributes.userStrings!= undefined && child.userData.attributes.userStrings.length > 0) {
-            //get color from userStrings
-            const colorData = child.userData.attributes.userStrings[0]
-            const col = colorData[1]
-
-            //convert color from userstring to THREE color and assign it
-            const threeColor = new THREE.Color("rgb(" + col + ")")
-            const mat = new THREE.LineBasicMaterial({ color: threeColor })
-            child.material = mat
-
-        }
+      const mat = new THREE.MeshNormalMaterial()
+      child.material = mat
 
 
+      // if (child.isLine) {
+      //   if (child.userData.attributes.userStrings!= undefined && child.userData.attributes.userStrings.length > 0) {
+      //       //get color from userStrings
+      //       const colorData = child.userData.attributes.userStrings[0]
+      //       const col = colorData[1]
 
-      }
+      //       //convert color from userstring to THREE color and assign it
+      //       const threeColor = new THREE.Color("rgb(" + col + ")")
+      //       const mat = new THREE.LineBasicMaterial({ color: threeColor })
+      //       child.material = mat
+
+      //   }
+
+      // }
+
+
     })
 
 
     scene.add(object)
 
-    // zoom to extents
-    for (let child of scene.children) {
-        if (child.type == "Object3D") {
-          // zoom to extents
-          zoomCameraToSelection(camera, controls, child.children)
+    // // zoom to extents
+    // for (let child of scene.children) {
+    //     if (child.type == "Object3D") {
+    //       // zoom to extents
+    //       zoomCameraToSelection(camera, controls, child.children)
 
-        }
-      }
+    //     }
+    //   }
       
 
     console.log("Compute done")
