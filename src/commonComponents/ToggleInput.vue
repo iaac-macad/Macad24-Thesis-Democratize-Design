@@ -2,31 +2,31 @@
 import { ref } from "vue"
 
 // Define props
-defineProps(['title'])
+const props = defineProps(['title', 'val'])
 
+const title = ref(props.title)
 // Define emits
-const emits = defineEmits(['updateValue'])
+const emits = defineEmits(['update'])
 
 // Define variables with refs
-var toggleValue = ref(false)
+var toggleValue = ref(props.val)
 
-// Define functions
-function sendToggleUpdate() {
-    emits('updateValue', toggleValue.value)
-    //console.log(`from child component ${toggleValue.value}`)
+function emitValueUpdate()
+{
+  emits("update", toggleValue.value, title.value)
 }
 </script>
 
 
 <template>
     <form class = "definition-input">
-        <label class="input-title" for="toggle"> {{ title }}</label>
+        <label class="input-title" for="toggle"> {{ title }}: {{  toggleValue }}</label>
 
         <div class="checkbox-wrapper-22">
         <label class="switch" for="checkbox">
             <input type="checkbox" id="checkbox" 
             v-model="toggleValue" 
-            v-on:change="sendToggleUpdate"/>
+            v-on:change="emitValueUpdate"/>
 
             <div class="slider round"></div>
         </label>

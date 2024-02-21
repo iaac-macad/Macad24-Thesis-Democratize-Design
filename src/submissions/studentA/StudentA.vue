@@ -3,7 +3,6 @@ import { ref, onBeforeMount, computed } from "vue"
 import { loadRhino } from "@/scripts/compute.js"
 
 // Import other Vue components in order to add them to a template.
-import Header from "commonComponents/Header.vue"
 import GeometryView from "commonComponents/GeometryView.vue"
 import SliderInput from "commonComponents/SliderInput.vue"
 import ComputeButton from "commonComponents/ComputeButton.vue"
@@ -46,7 +45,6 @@ function update3dmData(newData) {
 
 }
 
-
 function receiveMetadata(newValue) {
   console.log(newValue)
   metadata.value = newValue
@@ -81,7 +79,7 @@ const computeData = computed(() => {
   </div>
 
   <div id="viewer" class="container">
-    <GeometryView :data="computeData" :path="path" :runCompute="compute" @updateMetadata="receiveMetedata" />
+    <GeometryView :data="computeData" :path="path" :runCompute="compute" @updateMetadata="receiveMetadata" />
   </div>
 </template>
   
