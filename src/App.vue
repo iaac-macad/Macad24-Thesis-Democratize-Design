@@ -50,6 +50,7 @@ function updateValue(newValue, parameterName) {
 function update3dmData(newData) {
   encodedFile.value = newData
   isButtonDisabled.value = false
+  compute.value = true  
   
 }
 
@@ -61,8 +62,8 @@ function receiveMetedata(newMetadata) {
 }
 
 function runCompute(newVal){
+  compute.value = newVal  
 
-  compute.value = newVal
 
 }
 

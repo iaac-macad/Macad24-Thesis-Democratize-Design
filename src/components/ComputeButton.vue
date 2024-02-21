@@ -15,12 +15,10 @@ const emits = defineEmits(["toggleCompute"]);
 
 const props = defineProps(["title", "isDisabled"]);
 const titlec = ref(props.title);
-const isActive = ref(false);
 
 
 async function onButtonClick(state) {
-  isActive.value = state
-  emits("toggleCompute", isActive.value );
+  emits("toggleCompute", state );
 }
 </script>
 
