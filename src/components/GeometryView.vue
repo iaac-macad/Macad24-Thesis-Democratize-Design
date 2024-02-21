@@ -50,7 +50,10 @@ function init() {
 
   // https://threejs.org/docs/#api/en/cameras/PerspectiveCamera
   camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000)
-  camera.position.set(0, 0, 40)
+  camera.position.set(40, 40, 40)
+
+  //change z vector
+  camera.up.set(0,0,1);
 
   // https://threejs.org/docs/?q=scene#api/en/scenes/Scene
   scene = new THREE.Scene()
@@ -97,24 +100,33 @@ async function compute() {
     // add object graph from rhino model to three.js scene
     object.traverse((child) => {
 
-      const mat = new THREE.MeshNormalMaterial()
-      child.material = mat
 
+        //chec ig 
+        console.log(child)
 
-      // if (child.isLine) {
-      //   if (child.userData.attributes.userStrings!= undefined && child.userData.attributes.userStrings.length > 0) {
-      //       //get color from userStrings
-      //       const colorData = child.userData.attributes.userStrings[0]
-      //       const col = colorData[1]
+        if (child.userData.hasOwnProperty("attributes")) {
+            // get color from userStrings
+            const colorData = child.userData.attributes.userStrings[0]
+            const col = colorData[1]
 
-      //       //convert color from userstring to THREE color and assign it
-      //       const threeColor = new THREE.Color("rgb(" + col + ")")
-      //       const mat = new THREE.LineBasicMaterial({ color: threeColor })
-      //       child.material = mat
+            console.log("Color: ", col)
 
-      //   }
+            //convert color from userstring to THREE color and assign it
+            const threeColor = new THREE.Color("rgb(" + col + ")")
 
-      // }
+            if (child.isLine) {
+            const mat = new THREE.LineBasicMaterial({ color: threeColor })
+            child.material = mat
+            }
+
+            if (child.isMesh) {
+            const mat = new THREE.MeshStandardMaterial({ color: threeColor, specular: 0x111111, shininess: 200 })
+            child.material = mat
+            }
+
+        }
+
+      
 
 
     })
