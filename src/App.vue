@@ -12,32 +12,18 @@ import Header from "./components/Header.vue"
 import GeometryView from "./components/GeometryView.vue"
 import SliderInput from "./components/SliderInput.vue"
 import ComputeButton from "./components/ComputeButton.vue"
-import DropdownSelector from "./components/DropdownSelector.vue"
 import Upload3dm from "./components/Upload3dm.vue"
 
 
 
 import def from './assets/rhino_input.gh' //import Grasshopper definition for assets
 
-let firstSliderName = ref("X") //must match the Input name in your GH definition!
-let firstSliderValue = ref(1) //default slider value
+let firstSliderName = ref("NodeSize") //must match the Input name in your GH definition!
+let firstSliderValue = ref(.5) //default slider value
 
-let secondSliderName = ref("Y") //must match the Input name in your GH definition!
-let secondSliderValue = ref(1) //default slider value
+let secondSliderName = ref("StrutSize") //must match the Input name in your GH definition!
+let secondSliderValue = ref(.5) //default slider value
 
-let thirdSliderName = ref("Z") //must match the Input name in your GH definition!
-let thirdSliderValue = ref(1) //default slider value
-
-let dropdownName = ref("Type")
-let dropdownIndex = ref(0)
-
-const dropdownOptions = [
-  { label: "Mesh", value: 0 },
-  { label: "Brep", value: 1},
-  { label: "SubD", value: 2 },
-  { label: "Curve", value: 3 },
-  
-];
 
 
 let encodedFile = ref(null);
@@ -60,13 +46,7 @@ function updateValue(newValue, parameterName) {
     secondSliderValue.value = newValue
   }
 
-  else if (parameterName === thirdSliderName.value) {
-    thirdSliderValue.value = newValue
-  }
 
-  else if (parameterName === dropdownName.value) {
-    dropdownIndex.value = newValue
-  }
 
   console.log( parameterName + " : " + newValue)
 }
@@ -83,6 +63,7 @@ function update3dmData(newData) {
 function receiveMetedata(newMetadata) {
   metadata.value = newMetadata
   runCompute.value = false
+
 }
 
 function runCompute(newVal){
@@ -96,9 +77,8 @@ const computeData = computed(() => {
   data = {
     ["encodedFile"]: encodedFile.value, 
     [firstSliderName.value]: Number(firstSliderValue.value),
-    [secondSliderName.value]: Number(secondSliderValue.value),
-    [thirdSliderName.value]: Number(thirdSliderValue.value),
-    [dropdownName.value]: Number(dropdownIndex.value)
+    [secondSliderName.value]: Number(secondSliderValue.value)
+
   };
 
   return data
@@ -121,34 +101,20 @@ with data, objects, functions etc. -->
         
       <SliderInput 
           :title="firstSliderName"
-          :min = "1"
-          :max = "10"
-          :step = "1"
+          :min = ".1"
+          :max = "1"
+          :step = ".1"
           :val = "firstSliderValue"
           @update="updateValue"></SliderInput>
 
           <SliderInput 
           :title="secondSliderName"
-          :min = "1"
-          :max = "10"
-          :step = "1"
+          :min = ".1"
+          :max = "1"
+          :step = ".1"
           :val = "secondSliderValue"
           @update="updateValue"></SliderInput>
 
-          <SliderInput 
-          :title="thirdSliderName"
-          :min = "1"
-          :max = "10"
-          :step = "1"
-          :val = "thirdSliderValue"
-          @update="updateValue"></SliderInput>
-
-          <DropdownSelector 
-          :title="dropdownName" 
-          :options="dropdownOptions" 
-          :val="dropdownIndex" 
-          @update="updateValue"
-          />
 
           <ComputeButton 
           title="Compute" 
@@ -157,6 +123,15 @@ with data, objects, functions etc. -->
 
           />
 
+
+        <div class="metadata">
+
+          <!-- implement v-for element to iterate through metadata -->
+          <div v-for="item in metadata">
+            {{ item.value }}
+          </div>
+
+        </div>
 
     </div>
       
@@ -243,6 +218,18 @@ h2 {
   cursor: pointer;
 }
 
+.metadata{
+
+  margin-top: 30px;
+  padding: 5px;
+  background-color: #ffffff;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1rem;
+  text-align: left;
+  color: black;
+  margin-bottom: 1rem;
+
+}
 
 </style>
 
