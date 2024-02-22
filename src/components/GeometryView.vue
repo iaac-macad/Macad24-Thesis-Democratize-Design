@@ -104,6 +104,26 @@ async function compute() {
 
         console.log("key: ", child.userData.attributes.userStrings[0][0])
         console.log("value: ", child.userData.attributes.userStrings[0][1])
+
+
+        //get color from userStrings
+        const colorData = child.userData.attributes.userStrings[0]
+        const col = colorData[1]
+
+        if (child.isLine) {
+        //convert color from userstring to THREE color and assign it
+        const threeColor = new THREE.Color("rgb(" + col + ")")
+        const mat = new THREE.LineBasicMaterial({ color: threeColor })
+        child.material = mat
+        }
+
+        if (child.isMesh) {
+        //convert color from userstring to THREE color and assign it
+        const threeColor = new THREE.Color("rgb(" + col + ")")
+        const mat = new THREE.MeshBasicMaterial({ color: threeColor })
+        child.material = mat
+        }
+
         
       }
 
