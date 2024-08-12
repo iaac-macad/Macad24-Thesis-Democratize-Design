@@ -2,11 +2,11 @@ import rhino3dm from "https://cdn.jsdelivr.net/npm/rhino3dm@8.0.0-beta2/rhino3dm
 import RhinoCompute from "compute-rhino3d"
 import { store } from "../stores/storeSingletons"
 
-// RhinoCompute.url = "http://localhost:8081/" //if debugging locally.
+RhinoCompute.url = "http://localhost:8081/" //if debugging locally.
 
 // If accessing the compute server from a remote domain, you will need to enable CORS.
-RhinoCompute.url = "https://compute-server.iaac.net/"
-RhinoCompute.apiKey = "datamgmt2024" 
+// RhinoCompute.url = "https://compute-server.iaac.net/"
+// RhinoCompute.apiKey = "datamgmt2024" 
 
 
 let rhino, doc, res
