@@ -44,50 +44,21 @@ function emitValueUpdate()
 </template>
 
 <style scoped>
-label {
-    display: inline-block;
-    margin-bottom: 8px;
-    color: 'White';
-    font-family: Roboto Mono, monospace;
-    font-size: 14px;
-    font-weight: lighter;
-}
 .modern-range {
   -webkit-appearance: none;
   width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  background: linear-gradient(to right, #000 0%, #8a8a8a 50%, #6d6d6d 50%, #8d8d8d 100%);
-  outline: none;
-  margin: 8px 0px;
-  background-image: -webkit-repeating-linear-gradient(left, #8a8a8a, #8a8a8a 1px, transparent 1px, transparent 4px);
+  background: linear-gradient(90deg, #fce1e9, #eb487c);
+  height: 17px;
+  border-radius: 15px;
+  margin: 10px 0px;
 }
 
 .modern-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  /* background: #000; */
-  background: grey;
-  /* cursor: pointer; */
-  cursor: grab;
-}
-
-.modern-range::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #000;
-  cursor: pointer;
-}
-
-.modern-range::-ms-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #000;
+  height: 15px;
+  width: 15px;
+  border-radius: 15px;
+  background-color: white;
   cursor: pointer;
 }
 </style>

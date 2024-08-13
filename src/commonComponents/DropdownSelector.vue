@@ -2,14 +2,14 @@
 import { ref } from "vue";
 
 // Define props coming from parent component
-const props = defineProps(["title", "options", "val"]);
+const props = defineProps(["title", "options"]);
 const title = ref(props.title)
 
 // Define events that will be emitted to parent
 const emits = defineEmits(["update"]);
 
 // Value that is binded with selection option
-var selectedOption = ref(props.val);
+var selectedOption = ref(0);
 
 // Function called on v-on:input
 function emitValueUpdate() {
@@ -19,8 +19,7 @@ function emitValueUpdate() {
 
 <template>
   <form class="definition-input">
-    <!-- <label class="input-title">{{ title }}: {{ selectedOption }} </label> -->
-    <label class="input-title">{{ title }}</label>
+    <label class="input-title">{{ title }} index: {{ selectedOption }} </label>
 
     <select
       v-model="selectedOption"
@@ -40,24 +39,15 @@ function emitValueUpdate() {
 
 <style scoped>
 .dropdown {
-  height: 30px;
+  height: 40px;
   margin: 10px 0 0;
   padding: 0 15px;
-  border: 1px solid grey;
+  border: 1px solid black;
   border-radius: 8px;
   font-family: Roboto Mono, monospace;
-  font-size: 12px;
+  font-size: medium;
   width: 100%;
   cursor: pointer;
   color: #1b314f;
-}
-
-label {
-    display: inline-block;
-    margin-bottom: 0px;
-    color: 'White';
-    font-family: Roboto Mono, monospace;
-    font-size: 14px;
-    font-weight: lighter;
 }
 </style>

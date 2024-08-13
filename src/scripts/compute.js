@@ -5,8 +5,8 @@ import { store } from "../stores/storeSingletons"
 RhinoCompute.url = "http://localhost:8081/" //if debugging locally.
 
 // If accessing the compute server from a remote domain, you will need to enable CORS.
-// RhinoCompute.url = "https://compute-server.iaac.net/"
-// RhinoCompute.apiKey = "datamgmt2024" 
+//  RhinoCompute.url = "https://compute-server.iaac.net/"
+//  RhinoCompute.apiKey = "datamgmt20242"
 
 
 let rhino, doc, res
@@ -15,7 +15,6 @@ async function runCompute(data, path) {
   store.computing = true;
   let def = await loadGH(path);
   res = await compute(def, data);
-
   doc = createDoc(res);
 
   //downlod 3dm model, optionally
@@ -54,6 +53,10 @@ async function compute(definition, definitionInputs) {
     trees.push(param);
   }
 
+  // console.log("Sending request to server...");
+  // console.log("Definition:", definition);
+  // console.log("Input Trees:", JSON.stringify(trees, null, 2));
+  
   const res = await RhinoCompute.Grasshopper.evaluateDefinition(
     definition,
     trees
@@ -122,12 +125,14 @@ function createDoc(res) {
 }
 
 // download button handler
-function download(doc) {
-  let buffer = doc.toByteArray();
+function download(fileName) {
+  const options = new rhino.File3dmWriteOptions();
+  options.version = 7;
+  let buffer = doc.toByteArrayOptions(options);
   let blob = new Blob([buffer], { type: "application/octect-stream" });
   let link = document.createElement("a");
   link.href = window.URL.createObjectURL(blob);
-  link.download = "boolean.3dm";
+  link.download = fileName+'.3dm';
   link.click();
 }
 
@@ -190,4 +195,4 @@ function base64ByteArray(bytes) {
   return base64
 }
 
-export { loadRhino, runCompute, base64ByteArray };
+export { loadRhino, runCompute, base64ByteArray, download };

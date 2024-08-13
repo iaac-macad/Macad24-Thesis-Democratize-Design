@@ -54,7 +54,14 @@ const uploadFile = async (event) => {
   
 <style scoped>
   .customUpload {
-    background-color: var(--pink);
+    background-color: burlywood;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+  }
+
+  button:hover,  .customUpload:hover {
+    background-color: green;
+    box-shadow: 3px 3px rgb(46, 46, 46);
   }
 
 </style>
