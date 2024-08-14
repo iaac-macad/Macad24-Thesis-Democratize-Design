@@ -24,6 +24,27 @@ const props = defineProps(["data", "path", "runCompute"]);
 const emits = defineEmits(["updateMetadata"]);  
 
 
+
+
+
+// let isThreeJsInitialized = false;
+
+// onMounted(() => {
+//   init();  // Make sure Three.js is initialized first
+//   isThreeJsInitialized = true;
+// });
+
+// watch(() => props.runCompute, (newValue) => {
+//   if (newValue && isThreeJsInitialized) {
+//     compute();
+//   }
+// });
+
+
+
+
+
+
 watch(() => props.runCompute, (newValue) => {
   if (newValue) {
     compute();
