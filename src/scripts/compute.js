@@ -5,8 +5,8 @@ import { store } from "../stores/storeSingletons"
 RhinoCompute.url = "http://localhost:8081/" //if debugging locally.
 
 // If accessing the compute server from a remote domain, you will need to enable CORS.
-//  RhinoCompute.url = "https://compute-server.iaac.net/"
-//  RhinoCompute.apiKey = "datamgmt20242"
+// RhinoCompute.url = "https://compute-server.iaac.net/"
+// RhinoCompute.apiKey = "datamgmt20242" 
 
 
 let rhino, doc, res
@@ -15,6 +15,7 @@ async function runCompute(data, path) {
   store.computing = true;
   let def = await loadGH(path);
   res = await compute(def, data);
+  
   doc = createDoc(res);
 
   //downlod 3dm model, optionally
@@ -31,7 +32,6 @@ async function loadRhino() {
       resolve(true)
     });
   })
-
 }
 
 async function loadGH(definitionPath) {
@@ -53,10 +53,6 @@ async function compute(definition, definitionInputs) {
     trees.push(param);
   }
 
-  // console.log("Sending request to server...");
-  // console.log("Definition:", definition);
-  // console.log("Input Trees:", JSON.stringify(trees, null, 2));
-  
   const res = await RhinoCompute.Grasshopper.evaluateDefinition(
     definition,
     trees

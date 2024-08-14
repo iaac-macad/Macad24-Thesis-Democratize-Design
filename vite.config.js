@@ -18,6 +18,7 @@ export default defineConfig({
       'commonComponents': fileURLToPath(new URL('./src/commonComponents', import.meta.url))
     }
   },
-  assetsInclude: ['**/*.gh', '**/*.3dm'],
-
+  assetsInclude: ['**/*.gh', '**/*.3dm', '**/*.jpg', '**/*.png'],
+  
 })
+

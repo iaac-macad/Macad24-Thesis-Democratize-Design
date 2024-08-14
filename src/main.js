@@ -13,3 +13,4 @@ import '@/styles/toggle-styles.css'
 
 // Create Vue appliction with App.vue component and inject it into element with id 'app'
 createApp(App).mount("#app")
+

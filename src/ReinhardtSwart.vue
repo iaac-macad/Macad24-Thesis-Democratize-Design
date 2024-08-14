@@ -3,7 +3,7 @@ import { ref, onBeforeMount, computed } from "vue"
 import { loadRhino } from "@/scripts/compute.js"
 
 // Import other Vue components in order to add them to a template.
-import Header from "./components/Header.vue"
+import Header from "commonComponents/Header.vue"
 import GeometryView2 from "./components/GeometryView2.vue"
 import SliderInput from "./components/SliderInput.vue"
 import DropdownSelector from "./components/DropdownSelector.vue"
@@ -156,6 +156,7 @@ const computeData = computed(() => {
 })
 
 </script>
+
 
 
 <template>

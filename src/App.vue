@@ -252,20 +252,17 @@ h2 {
 
 
 <script setup>
-import { ref, onBeforeMount, computed, onMounted } from "vue";
-import { loadRhino } from "@/scripts/compute.js";
+import { ref, onBeforeMount, computed, onMounted } from "vue"
+import { loadRhino } from "@/scripts/compute.js"
 
 // Import other Vue components in order to add them to a template.
-import Header from "./components/Header.vue"
-import GeometryView2 from "./components/GeometryView2.vue"
+import Header from "commonComponents/Header.vue"
+import GeometryView2 from "./components/GeometryView.vue"
 import SliderInput from "./components/SliderInput.vue"
 import DropdownSelector from "./components/DropdownSelector.vue"
 import ComputeButton from "./components/ComputeButton.vue"
 import Upload3dm from "./components/Upload3dm.vue"
 import { download } from "@/scripts/compute.js"
-
-// PINIA STORE
-import { store } from './stores/storeSingletons'
 
 import def from './assets/stick08.gh' 
 
@@ -411,12 +408,11 @@ const computeData = computed(() => {
   return data
 })
 
+
 </script>
 
 
 <template>
-  <Header title="Digital Tools for Cloud-based Data Management - Session 06 - File Input"></Header>
-  
   <div id="appwindow" >
     <div id="sidebar" class="container">
       <img class="mainlogo" alt="logo" src="./assets/logo.png" />
