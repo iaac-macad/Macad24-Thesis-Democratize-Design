@@ -11,6 +11,17 @@ import ComputeButton from "./components/ComputeButton.vue"
 import Upload3dm from "./components/Upload3dm.vue"
 import { download } from "@/scripts/compute.js"
 
+
+
+
+//Import and define Store
+import {useComputeStore} from "@/stores/computeStore.js"
+const computeStore = useComputeStore()
+
+
+
+
+
 import def from './assets/stick08.gh' 
 
 let sliderName = ref("Interest") //must match the Input name in your GH definition!
@@ -153,6 +164,16 @@ const computeData = computed(() => {
   };
 
   return data
+})
+
+
+
+onBeforeMount( () => {
+})
+
+
+onMounted(() => {
+  loadRhino();
 })
 
 
