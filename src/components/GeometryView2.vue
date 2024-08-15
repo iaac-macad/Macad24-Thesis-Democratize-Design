@@ -292,7 +292,7 @@ onMounted(async() => {
 <style scoped>
 
 
-#viewport {
+/* #viewport {
 
   height: 100%;
   width: 100%;
@@ -304,6 +304,23 @@ onMounted(async() => {
   height: 100%;
   width: 100%;
   min-width: 200px;
+  position:inherit;
+} */
+
+
+
+#viewport {
+  height: 100vh;
+  width: 100vw;
+  min-width: 200px;
+  min-height: 200px;
+  position:inherit;
+}
+#threejs-container {
+  height: 100vh;
+  width: 100vw;
+  min-width: 200px;
+  min-height: 200px;
   position:inherit;
 }
 

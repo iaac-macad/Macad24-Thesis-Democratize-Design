@@ -4,7 +4,7 @@ import { loadRhino } from "@/scripts/compute.js"
 
 // Import other Vue components in order to add them to a template.
 import Header from "commonComponents/Header.vue"
-import GeometryView2 from "./components/GeometryView.vue"
+import GeometryView2 from "./components/GeometryView2.vue"
 import SliderInput from "./components/SliderInput.vue"
 import DropdownSelector from "./components/DropdownSelector.vue"
 import ComputeButton from "./components/ComputeButton.vue"
@@ -211,10 +211,19 @@ const computeData = computed(() => {
   
 <style scoped>
 
-#appwindow {
+/* #appwindow {
   display: flex;
   width: 100%;
   height: 100%;
+  padding: 20px;
+  background-color:#82bd9d
+} */
+
+
+#appwindow {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
   padding: 20px;
   background-color:#82bd9d
 }
@@ -242,8 +251,14 @@ border-width: 2px;
   padding: 0px 20px;
 }
 
+/* #sidebar {
+  width: 310px;
+  padding: 20px;
+} */
+
 #sidebar {
   width: 310px;
+  height: 800px;
   padding: 20px;
 }
 
@@ -268,7 +283,7 @@ border-width: 2px;
   margin-bottom: 25px;
 }
 
-#viewerwindow {
+/* #viewerwindow {
   display: flex;
   flex-direction: column;
   width: calc(100% - 580px);
@@ -278,13 +293,37 @@ border-width: 2px;
   border-color: white;
   border-radius: 25px;
   background-color: #83be9e;
+} */
+
+#viewerwindow {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 580px);
+  height: 100vh;
+  gap: 10px;
+  padding: 0px 20px;
+  border-color: white;
+  /* border-radius: 25px; */
+  background-color: #83BE9E;
 }
+
+/* #viewer {
+  width: 100%;
+  height: 100%;
+} */
 
 #viewer {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  align-items: center;
 }
 
+
+/* #Construction {
+  position: absolute;
+  text-align: left;
+  margin: 0px 0px;
+} */
 
 #Construction {
   position: absolute;
@@ -315,6 +354,9 @@ border-width: 2px;
   cursor: pointer;
 }
 </style>
+
+
+
 
 
 
