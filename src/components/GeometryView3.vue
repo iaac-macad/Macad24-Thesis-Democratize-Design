@@ -91,22 +91,22 @@ function init() {
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	// document.body.appendChild( renderer.domElement );
 
-  // // add shadow plane
-  // plane = new THREE.Mesh(
-	//     new THREE.PlaneGeometry(),
-	//     new THREE.ShadowMaterial( {
-	//     color: 0xd81b60,
-	//     transparent: true,
-  //     // transparent: false,
-	//     opacity: 0.075,
-	//     side: THREE.DoubleSide,
-	//   } ),
-	// );
-	// plane.position.z = - 0.1;
-	// // plane.rotation.x = - Math.PI / 2;
-	// plane.scale.setScalar( 5 );
-	// plane.receiveShadow = true;
-	// scene.add( plane );
+  // add shadow plane
+  plane = new THREE.Mesh(
+	    new THREE.PlaneGeometry(),
+	    new THREE.ShadowMaterial( {
+	    color: 0xd81b60,
+	    transparent: true,
+      // transparent: false,
+	    opacity: 0.075,
+	    side: THREE.DoubleSide,
+	  } ),
+	);
+	plane.position.z = - 0.1;
+	// plane.rotation.x = - Math.PI / 2;
+	plane.scale.setScalar( 5 );
+	plane.receiveShadow = true;
+	scene.add( plane );
 
 
   //*************************** */

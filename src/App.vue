@@ -186,17 +186,17 @@ const computeData = computed(() => {
 
     <div id="viewerwindow" >
       
-      <!-- <div id="Construction" class="data1">
-        <p id="para">Price:</p>
-        <div id="para2" v-if="metadata[1]">${{ metadata[1].value }}</div>
+      <div id="Construction" class="data1">
+        <p id="para">1-bedroom apartments:</p>
+        <div id="para2" v-if="metadata[0]">{{ metadata[0].value }}</div>
 
-        <p id="para">Ideal for Breeds like:</p>
+        <p id="para">2-bedroom apartments:</p>
+        <div id="para2" v-if="metadata[1]">{{ metadata[1].value }}</div>
+
+        <p id="para">3-bedroom apartments:</p>
         <div id="para2" v-if="metadata[2]">{{ metadata[2].value }}</div>
 
-        <p id="para">Level of Car Scratch Damage:</p>
-        <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}</div>
-
-      </div> -->
+      </div>
 
 
       <div id="viewer" class="geometry">
