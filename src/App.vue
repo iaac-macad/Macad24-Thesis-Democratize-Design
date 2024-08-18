@@ -12,7 +12,7 @@ import Upload3dm from "./components/Upload3dm.vue"
 import { download } from "@/scripts/compute.js"
 
 // import def from './assets/stick08.gh' 
-import def from './assets/osm_v15_2h.gh' 
+import def from './assets/osm_v15_3h.gh' 
 
 let sliderName = ref("Floor") //must match the Input name in your GH definition!
 let sliderValue = ref(0) //default slider value
