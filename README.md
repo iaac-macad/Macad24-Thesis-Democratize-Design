@@ -1,4 +1,4 @@
-# bimsc24-datamgmt-Final Project
+# IAAC MaCAD 2024 Thesis
 This template should help get you started developing with Vue 3 in Vite.
 
 ## Recommended IDE Setup
