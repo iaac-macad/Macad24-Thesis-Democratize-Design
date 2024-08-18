@@ -69,6 +69,9 @@ function init() {
   // We are taking element defined in <template> and appending our render to it. 
     container.appendChild(renderer.domElement)
 
+  //orient object
+  THREE.Object3D.DEFAULT_UP.set( 0, 0, 1 );
+
   // https://threejs.org/docs/#api/en/cameras/PerspectiveCamera
   camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000)
   camera.position.set(0, 0, 40)
@@ -244,17 +247,17 @@ onMounted(async() => {
 
 
 #viewport {
-
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   min-width: 200px;
+  min-height: 200px;
   position:inherit;
 }
-
 #threejs-container {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   min-width: 200px;
+  min-height: 200px;
   position:inherit;
 }
 
