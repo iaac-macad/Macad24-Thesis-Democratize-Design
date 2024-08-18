@@ -24,27 +24,6 @@ const props = defineProps(["data", "path", "runCompute"]);
 const emits = defineEmits(["updateMetadata"]);  
 
 
-
-
-
-// let isThreeJsInitialized = false;
-
-// onMounted(() => {
-//   init();  // Make sure Three.js is initialized first
-//   isThreeJsInitialized = true;
-// });
-
-// watch(() => props.runCompute, (newValue) => {
-//   if (newValue && isThreeJsInitialized) {
-//     compute();
-//   }
-// });
-
-
-
-
-
-
 watch(() => props.runCompute, (newValue) => {
   if (newValue) {
     compute();
@@ -53,13 +32,14 @@ watch(() => props.runCompute, (newValue) => {
 
 
 // Three js objects
-let renderer, camera, scene,  controls, container
+let renderer, camera, scene,  controls, container, plane
 
 
 function init() {
   // https://threejs.org/docs/#api/en/renderers/WebGLRenderer
   // This object will render our scene
-  renderer = new THREE.WebGLRenderer()
+  // renderer = new THREE.WebGLRenderer()
+  renderer = new THREE.WebGLRenderer( { antialias: true } );
 
   container = document.getElementById("threejs-container")
 
@@ -67,7 +47,7 @@ function init() {
   renderer.setSize(container.offsetWidth, container.offsetHeight)
 
   // We are taking element defined in <template> and appending our render to it. 
-    container.appendChild(renderer.domElement)
+  container.appendChild(renderer.domElement)
 
   //orient object
   THREE.Object3D.DEFAULT_UP.set( 0, 0, 1 );
@@ -78,24 +58,73 @@ function init() {
 
   // https://threejs.org/docs/?q=scene#api/en/scenes/Scene
   scene = new THREE.Scene()
-  scene.background = new THREE.Color("#f5f6fa")
+  // scene.background = new THREE.Color("#f1e1f2");
+  scene.background = new THREE.Color("#f5f6fa");
+  // scene.background = new THREE.Color( "hsl(147, 31%, 63%)" );
 
+
+  //from website*************
+  const ambient = new THREE.HemisphereLight( 0xffffff, 0xbfd4d2, 3 );
+	scene.add( ambient );
+
+	const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.3 );
+	directionalLight.position.set( 1, 4, 3 ).multiplyScalar( 3 );
+  directionalLight.castShadow = true;
+	directionalLight.shadow.mapSize.setScalar( 2048 );
+	directionalLight.shadow.bias = - 1e-4;
+  directionalLight.shadow.normalBias = 1e-4;
+	scene.add( directionalLight );
+
+  // // add some ambient light here
+  // const ambientlight = new THREE.AmbientLight(0xffffff, 1)
+  // ambientlight.position.set(0, 0, 0)
+  // scene.add(ambientlight)
+
+  // const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
+  // directionalLight.position.set(0, 1, 0)
+  // scene.add(directionalLight)
+
+	// renderer
+	// renderer.setPixelRatio( window.devicePixelRatio );
+	// renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+	// document.body.appendChild( renderer.domElement );
+
+  // // add shadow plane
+  // plane = new THREE.Mesh(
+	//     new THREE.PlaneGeometry(),
+	//     new THREE.ShadowMaterial( {
+	//     color: 0xd81b60,
+	//     transparent: true,
+  //     // transparent: false,
+	//     opacity: 0.075,
+	//     side: THREE.DoubleSide,
+	//   } ),
+	// );
+	// plane.position.z = - 0.1;
+	// // plane.rotation.x = - Math.PI / 2;
+	// plane.scale.setScalar( 5 );
+	// plane.receiveShadow = true;
+	// scene.add( plane );
+
+
+  //*************************** */
+
+  
   // orbit controls
   controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableDamping = true;
-	// controls.minDistance = 1;
-	// controls.maxDistance = 10;
-	// controls.target.set( 0, 0.35, 0 );
 	controls.update();
 
   // add some ambient light here
-  const ambientlight = new THREE.AmbientLight(0xffffff, 1)
-  ambientlight.position.set(0, 0, 0)
-  scene.add(ambientlight)
+  // const ambientlight = new THREE.AmbientLight(0xffffff, 1)
+  // ambientlight.position.set(0, 0, 0)
+  // scene.add(ambientlight)
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
-  directionalLight.position.set(0, 1, 0)
-  scene.add(directionalLight)
+  // const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
+  // directionalLight.position.set(0, 1, 0)
+  // scene.add(directionalLight)
 
 
   // add fun shape
@@ -112,12 +141,28 @@ async function compute() {
     emits("updateMetadata", doc.metadata);
   }
 
-  // clear objects from scene
+
+  // // clear objects from scene
+  // scene.traverse((child) => {
+  //   if (!child.isLight) {
+  //     scene.remove(child)
+  //   }
+  //   console.log(child)
+  // })
+
+
+  //clear objects from scene except for lights and ground plane
   scene.traverse((child) => {
     if (!child.isLight) {
-      scene.remove(child)
+        // Check if the child is a mesh and its geometry is a PlaneGeometry
+        if (child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry) {
+            console.log('Child is a plane');
+        } else {
+            scene.remove(child);
+        }
     }
-  })
+});
+
 
 
   const buffer = new Uint8Array(doc.toByteArray()).buffer;
@@ -126,28 +171,30 @@ async function compute() {
     // add object graph from rhino model to three.js scene
     object.traverse((child) => {
 
-      const mat = new THREE.MeshNormalMaterial()
-      child.material = mat
+      // console.log(child)
 
+      if (child.isLine) {
 
-      // if (child.isLine) {
-      //   if (child.userData.attributes.userStrings!= undefined && child.userData.attributes.userStrings.length > 0) {
-      //       //get color from userStrings
-      //       const colorData = child.userData.attributes.userStrings[0]
-      //       const col = colorData[1]
+        console.log(child)
+          
+        if (child.userData.attributes.userStrings!= undefined && child.userData.attributes.userStrings.length > 0) {
+            //get color from userStrings
+            const colorData = child.userData.attributes.userStrings[0]
+            const col = colorData[1]
 
-      //       //convert color from userstring to THREE color and assign it
-      //       const threeColor = new THREE.Color("rgb(" + col + ")")
-      //       const mat = new THREE.LineBasicMaterial({ color: threeColor })
-      //       child.material = mat
+            //convert color from userstring to THREE color and assign it
+            const threeColor = new THREE.Color("rgb(" + col + ")")
+            const mat = new THREE.LineBasicMaterial({ color: threeColor })
+            child.material = mat
+        }
 
-      //   }
+      }
 
-      // }
-
+      scene.add(plane);
+      child.castShadow = true;
+      child.receiveShadow = true;
 
     })
-
 
     scene.add(object)
 
@@ -162,6 +209,7 @@ async function compute() {
       
 
     console.log("Compute done")
+    // scene.add(plane);
   });
 }
 
@@ -249,6 +297,23 @@ onMounted(async() => {
 </script>
 
 <style scoped>
+
+
+/* #viewport {
+
+  height: 100%;
+  width: 100%;
+  min-width: 200px;
+  position:inherit;
+}
+
+#threejs-container {
+  height: 100%;
+  width: 100%;
+  min-width: 200px;
+  position:inherit;
+} */
+
 
 
 #viewport {
