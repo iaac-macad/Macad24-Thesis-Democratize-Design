@@ -15,11 +15,14 @@ import { download } from "@/scripts/compute.js"
 // import def from './assets/stick08.gh' 
 import def from './assets/osm_v15_3h.gh' 
 
-let sliderName = ref("Floor") //must match the Input name in your GH definition!
-let sliderValue = ref(0) //default slider value
+let sliderName = ref("Floor"); //must match the Input name in your GH definition!
+let sliderValue = ref(0); //default slider value
 
-let switchName = ref("Run Initial Agg") 
-let switchValue = ref(0) 
+let switchName = ref("Run LB"); 
+let switchValue = ref(false); 
+
+let switchName2 = ref("Run Initial Agg");
+let switchValue2 = ref(false);
 
 // let sliderName2 = ref("Thickness (mm)") 
 // let sliderValue2 = ref(4.2) 
@@ -109,6 +112,10 @@ function updateValue(newValue, parameterName) {
     switchValue.value = newValue
   }
 
+  else if (parameterName === switchName2.value) {
+    switchValue2.value = newValue
+  }
+
   // else if (parameterName === sliderName2.value) {
   //   sliderValue2.value = newValue
   // }
@@ -140,10 +147,10 @@ function receiveMetadata(newValue) {
   metadata.value = newValue
 }
 
-
 function runCompute(newVal) {
   compute.value = newVal
 }
+
 
 // a computed ref. Vue will keep track of this and update it
 const computeData = computed(() => {
@@ -156,7 +163,8 @@ const computeData = computed(() => {
   data = {
     ["encodedFile"]: file,
     [sliderName.value]: Number(sliderValue.value),
-    [switchName.value]: Number(switchValue.value),
+    [switchName.value]: switchValue.value,
+    [switchName2.value]: switchValue2.value,
     // [sliderName2.value]: Number(sliderValue2.value),
     // [dropdownName.value]: Number(dropdownIndex.value),
     // [dropdownName2.value]: Number(dropdownIndex2.value),
@@ -183,8 +191,12 @@ const computeData = computed(() => {
       <DropdownSelector :title="dropdownName2" :options="dropdownOptions2" :val="dropdownIndex2" @update="updateValue"/>
       <DropdownSelector :title="dropdownName3" :options="dropdownOptions3" :val="dropdownIndex3" @update="updateValue"/> -->
 
-      <Switch :title="switchName" :min="0" :max="1" :val="0" @update="updateValue"></Switch>
+      <!-- <Switch :title="switchName" :min="0" :max="1" :val="0" @update="updateValue"></Switch>
+      <Switch :title="switchName2" :min="0" :max="1" :val="0" @update="updateValue"></Switch> -->
 
+      <Switch :label="switchName" :initialValue="switchValue" @update="(newVal) => updateValue(newVal, switchName.value)" />
+      <Switch :label="switchName2" :initialValue="switchValue2" @update="(newVal) => updateValue(newVal, switchName2.value)" />
+        
       <SliderInput :title="sliderName" :min="0" :max="20" :step="1" :val="0" @update="updateValue"></SliderInput>
       <!-- <SliderInput :title="sliderName2" :min="3.0" :max="10.0" :step="0.1" :val="4.2" @update="updateValue"></SliderInput> -->
 
