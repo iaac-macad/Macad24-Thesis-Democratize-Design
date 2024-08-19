@@ -18,27 +18,27 @@ import def from './assets/osm_v15_3h.gh'
 let sliderName = ref("Floor"); //must match the Input name in your GH definition!
 let sliderValue = ref(0); //default slider value
 
-// let switchName = ref("Run LB"); 
-// let switchValue = ref(false); 
+let switchName = ref("Run LB"); 
+let switchValue = ref(false); 
 
-// let switchName2 = ref("Run Initial Agg");
-// let switchValue2 = ref(false);
+let switchName2 = ref("Run Initial Agg");
+let switchValue2 = ref(false);
 
-let dropdownName = ref("Run LB")
-let dropdownIndex = ref(0)
+// let dropdownName = ref("Run LB")
+// let dropdownIndex = ref(0)
 
-let dropdownName2 = ref("Run Initial Agg")
-let dropdownIndex2 = ref(0)
+// let dropdownName2 = ref("Run Initial Agg")
+// let dropdownIndex2 = ref(0)
 
-const dropdownOptions = [
-  { label: "Not Run", value: 0 },
-  { label: "Run", value: 1 },
-];
+// const dropdownOptions = [
+//   { label: "Not Run", value: 0 },
+//   { label: "Run", value: 1 },
+// ];
 
-const dropdownOptions2 = [
-  { label: "Not Run", value: 0 },
-  { label: "Run", value: 1 },
-];
+// const dropdownOptions2 = [
+//   { label: "Not Run", value: 0 },
+//   { label: "Run", value: 1 },
+// ];
 
 
 let encodedFile = ref(null);
@@ -57,21 +57,21 @@ function updateValue(newValue, parameterName) {
     sliderValue.value = newValue
   }
 
-  // else if (parameterName === switchName.value) {
-  //   switchValue.value = newValue
-  // }
-
-  // else if (parameterName === switchName2.value) {
-  //   switchValue2.value = newValue
-  // }
-
-  else if (parameterName === dropdownName.value) {
-    dropdownIndex.value = newValue
+  else if (parameterName === switchName.value) {
+    switchValue.value = newValue
   }
 
-  else if (parameterName === dropdownName2.value) {
-    dropdownIndex2.value = newValue
+  else if (parameterName === switchName2.value) {
+    switchValue2.value = newValue
   }
+
+  // else if (parameterName === dropdownName.value) {
+  //   dropdownIndex.value = newValue
+  // }
+
+  // else if (parameterName === dropdownName2.value) {
+  //   dropdownIndex2.value = newValue
+  // }
 
   console.log(parameterName + " : " + newValue)
 }
@@ -105,10 +105,10 @@ const computeData = computed(() => {
   data = {
     ["encodedFile"]: file,
     [sliderName.value]: Number(sliderValue.value),
-    // [switchName.value]: Boolean(switchValue.value),
-    // [switchName2.value]: Boolean(switchValue2.value),
-    [dropdownName.value]: Number(dropdownIndex.value),
-    [dropdownName2.value]: Number(dropdownIndex2.value),
+    [switchName.value]: Boolean(switchValue.value),
+    [switchName2.value]: Boolean(switchValue2.value),
+    // [dropdownName.value]: Number(dropdownIndex.value),
+    // [dropdownName2.value]: Number(dropdownIndex2.value),
   };
 
   return data
@@ -128,11 +128,11 @@ const computeData = computed(() => {
 
       <!-- <Upload3dm @encoded3dm="update3dmData" /> -->
 
-      <DropdownSelector :title="dropdownName" :options="dropdownOptions" :val="dropdownIndex" @update="updateValue"/>
-      <DropdownSelector :title="dropdownName2" :options="dropdownOptions2" :val="dropdownIndex2" @update="updateValue"/>
+      <!-- <DropdownSelector :title="dropdownName" :options="dropdownOptions" :val="dropdownIndex" @update="updateValue"/>
+      <DropdownSelector :title="dropdownName2" :options="dropdownOptions2" :val="dropdownIndex2" @update="updateValue"/> -->
 
-      <!-- <Switch :title="switchName" :val=false @update="updateValue"></Switch>
-      <Switch :title="switchName2" :val=false @update="updateValue"></Switch> -->
+      <Switch :title="switchName" :val=false @update="updateValue"></Switch>
+      <Switch :title="switchName2" :val=false @update="updateValue"></Switch>
 
       <!-- <Switch :label="switchName" :initialValue="switchValue" @update="(newVal) => updateValue(newVal, switchName.value)" />
       <Switch :label="switchName2" :initialValue="switchValue2" @update="(newVal) => updateValue(newVal, switchName2.value)" /> -->
