@@ -29,7 +29,8 @@ async function onButtonClick(state) {
 button,   .customUpload {
     width: 100%;
     font-family: 'Roboto Mono', monospace;
-    background-color: burlywood;
+    /* background-color: burlywood; */
+    background-color: grey;
     border: #1897ff;
     color: white;
     font-weight: bold;
@@ -47,7 +48,8 @@ button,   .customUpload {
   
   
   button:hover,  .customUpload:hover {
-    background-color: green;
+    /* background-color: green; */
+    background-color: magenta;
     box-shadow: 3px 3px rgb(46, 46, 46);
   }
 

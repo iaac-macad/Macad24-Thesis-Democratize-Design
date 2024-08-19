@@ -74,19 +74,14 @@ function init() {
 
   // https://threejs.org/docs/#api/en/cameras/PerspectiveCamera
   camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000)
-  camera.position.set(15, -15, 10)
+  camera.position.set(0, 0, 40)
 
   // https://threejs.org/docs/?q=scene#api/en/scenes/Scene
   scene = new THREE.Scene()
   scene.background = new THREE.Color("#f5f6fa")
 
   // orbit controls
-  controls = new OrbitControls(camera, renderer.domElement);
-	controls.enableDamping = true;
-	// controls.minDistance = 1;
-	// controls.maxDistance = 10;
-	// controls.target.set( 0, 0.35, 0 );
-	controls.update();
+  controls = new OrbitControls(camera, renderer.domElement)
 
   // add some ambient light here
   const ambientlight = new THREE.AmbientLight(0xffffff, 1)

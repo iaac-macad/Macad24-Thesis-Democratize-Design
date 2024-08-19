@@ -19,7 +19,6 @@ function emitValueUpdate() {
 
 <template>
   <form class="definition-input">
-    <!-- <label class="input-title">{{ title }}: {{ selectedOption }} </label> -->
     <label class="input-title">{{ title }}</label>
 
     <select
@@ -49,7 +48,8 @@ function emitValueUpdate() {
   font-size: 12px;
   width: 100%;
   cursor: pointer;
-  color: #1b314f;
+  /* color: #1b314f; */
+  color: black;
 }
 
 label {

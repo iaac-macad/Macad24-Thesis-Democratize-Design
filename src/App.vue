@@ -18,79 +18,28 @@ import def from './assets/osm_v15_3h.gh'
 let sliderName = ref("Floor"); //must match the Input name in your GH definition!
 let sliderValue = ref(0); //default slider value
 
-let switchName = ref("Run LB"); 
-let switchValue = ref(false); 
+// let switchName = ref("Run LB"); 
+// let switchValue = ref(false); 
 
-let switchName2 = ref("Run Initial Agg");
-let switchValue2 = ref(false);
+// let switchName2 = ref("Run Initial Agg");
+// let switchValue2 = ref(false);
 
-// let sliderName2 = ref("Thickness (mm)") 
-// let sliderValue2 = ref(4.2) 
+let dropdownName = ref("Run LB")
+let dropdownIndex = ref(0)
 
-// let dropdownName = ref("Stick Length")
-// let dropdownIndex = ref(2)
+let dropdownName2 = ref("Run Initial Agg")
+let dropdownIndex2 = ref(0)
 
-// let dropdownName2 = ref("Birth Month")
-// let dropdownIndex2 = ref(3)
+const dropdownOptions = [
+  { label: "Not Run", value: 0 },
+  { label: "Run", value: 1 },
+];
 
-// let dropdownName3 = ref("Birth Day")
-// let dropdownIndex3 = ref(25)
+const dropdownOptions2 = [
+  { label: "Not Run", value: 0 },
+  { label: "Run", value: 1 },
+];
 
-// const dropdownOptions = [
-//   { label: "Short", value: 0 },
-//   { label: "Medium", value: 1 },
-//   { label: "Long", value: 2 },
-//   { label: "Custom", value: 3 },
-// ];
-
-// const dropdownOptions2 = [
-//   { label: "Janurary", value: 1 },
-//   { label: "February", value: 2 },
-//   { label: "March", value: 3 },
-//   { label: "April", value: 4 },
-//   { label: "May", value: 5 },
-//   { label: "June", value: 6 },
-//   { label: "July", value: 7 },
-//   { label: "August", value: 8 },
-//   { label: "September", value: 9 },
-//   { label: "October", value: 10 },
-//   { label: "November", value: 11 },
-//   { label: "December", value: 12 },
-// ];
-
-// const dropdownOptions3 = [
-//   { label: "1", value: 1 },
-//   { label: "2", value: 2 },
-//   { label: "3", value: 3 },
-//   { label: "4", value: 4 },
-//   { label: "5", value: 5 },
-//   { label: "6", value: 6 },
-//   { label: "7", value: 7 },
-//   { label: "8", value: 8 },
-//   { label: "9", value: 9 },
-//   { label: "10", value: 10 },
-//   { label: "11", value: 11 },
-//   { label: "12", value: 12 },
-//   { label: "13", value: 13 },
-//   { label: "14", value: 14 },
-//   { label: "15", value: 15 },
-//   { label: "16", value: 16 },
-//   { label: "17", value: 17 },
-//   { label: "18", value: 18 },
-//   { label: "19", value: 19 },
-//   { label: "20", value: 20 },
-//   { label: "21", value: 21 },
-//   { label: "22", value: 22 },
-//   { label: "23", value: 23 },
-//   { label: "24", value: 24 },
-//   { label: "25", value: 25 },
-//   { label: "26", value: 26 },
-//   { label: "27", value: 27 },
-//   { label: "28", value: 28 },
-//   { label: "29", value: 29 },
-//   { label: "30", value: 30 },
-//   { label: "31", value: 31 },
-// ];
 
 let encodedFile = ref(null);
 let isButtonDisabled = ref(false)
@@ -108,29 +57,21 @@ function updateValue(newValue, parameterName) {
     sliderValue.value = newValue
   }
 
-  else if (parameterName === switchName.value) {
-    switchValue.value = newValue
+  // else if (parameterName === switchName.value) {
+  //   switchValue.value = newValue
+  // }
+
+  // else if (parameterName === switchName2.value) {
+  //   switchValue2.value = newValue
+  // }
+
+  else if (parameterName === dropdownName.value) {
+    dropdownIndex.value = newValue
   }
 
-  else if (parameterName === switchName2.value) {
-    switchValue2.value = newValue
+  else if (parameterName === dropdownName2.value) {
+    dropdownIndex2.value = newValue
   }
-
-  // else if (parameterName === sliderName2.value) {
-  //   sliderValue2.value = newValue
-  // }
-
-  // else if (parameterName === dropdownName.value) {
-  //   dropdownIndex.value = newValue
-  // }
-
-  // else if (parameterName === dropdownName2.value) {
-  //   dropdownIndex2.value = newValue
-  // }
-
-  // else if (parameterName === dropdownName3.value) {
-  //   dropdownIndex3.value = newValue
-  // }
 
   console.log(parameterName + " : " + newValue)
 }
@@ -146,6 +87,7 @@ function receiveMetadata(newValue) {
   console.log(newValue)
   metadata.value = newValue
 }
+
 
 function runCompute(newVal) {
   compute.value = newVal
@@ -163,15 +105,14 @@ const computeData = computed(() => {
   data = {
     ["encodedFile"]: file,
     [sliderName.value]: Number(sliderValue.value),
-    [switchName.value]: switchValue.value,
-    [switchName2.value]: switchValue2.value,
-    // [sliderName2.value]: Number(sliderValue2.value),
-    // [dropdownName.value]: Number(dropdownIndex.value),
-    // [dropdownName2.value]: Number(dropdownIndex2.value),
-    // [dropdownName3.value]: Number(dropdownIndex3.value),
+    // [switchName.value]: Boolean(switchValue.value),
+    // [switchName2.value]: Boolean(switchValue2.value),
+    [dropdownName.value]: Number(dropdownIndex.value),
+    [dropdownName2.value]: Number(dropdownIndex2.value),
   };
 
   return data
+
 })
 
 </script>
@@ -187,15 +128,14 @@ const computeData = computed(() => {
 
       <!-- <Upload3dm @encoded3dm="update3dmData" /> -->
 
-      <!-- <DropdownSelector :title="dropdownName" :options="dropdownOptions" :val="dropdownIndex" @update="updateValue"/>
+      <DropdownSelector :title="dropdownName" :options="dropdownOptions" :val="dropdownIndex" @update="updateValue"/>
       <DropdownSelector :title="dropdownName2" :options="dropdownOptions2" :val="dropdownIndex2" @update="updateValue"/>
-      <DropdownSelector :title="dropdownName3" :options="dropdownOptions3" :val="dropdownIndex3" @update="updateValue"/> -->
 
-      <!-- <Switch :title="switchName" :min="0" :max="1" :val="0" @update="updateValue"></Switch>
-      <Switch :title="switchName2" :min="0" :max="1" :val="0" @update="updateValue"></Switch> -->
+      <!-- <Switch :title="switchName" :val=false @update="updateValue"></Switch>
+      <Switch :title="switchName2" :val=false @update="updateValue"></Switch> -->
 
-      <Switch :label="switchName" :initialValue="switchValue" @update="(newVal) => updateValue(newVal, switchName.value)" />
-      <Switch :label="switchName2" :initialValue="switchValue2" @update="(newVal) => updateValue(newVal, switchName2.value)" />
+      <!-- <Switch :label="switchName" :initialValue="switchValue" @update="(newVal) => updateValue(newVal, switchName.value)" />
+      <Switch :label="switchName2" :initialValue="switchValue2" @update="(newVal) => updateValue(newVal, switchName2.value)" /> -->
         
       <SliderInput :title="sliderName" :min="0" :max="20" :step="1" :val="0" @update="updateValue"></SliderInput>
       <!-- <SliderInput :title="sliderName2" :min="3.0" :max="10.0" :step="0.1" :val="4.2" @update="updateValue"></SliderInput> -->
@@ -207,7 +147,7 @@ const computeData = computed(() => {
 
 
 
-    <div id="viewerwindow" >
+    <div id="viewerwindow">
       
       <div id="Construction" class="data1">
         <p id="para">1-bedroom apartments:</p>
@@ -248,11 +188,13 @@ const computeData = computed(() => {
   width: 100vw;
   height: 100vh;
   padding: 20px;
-  background-color:#82bd9d
+  /* background-color:#82bd9d; */
+  background-color: white;
 }
 
 .container{
-background-color: #cccccc8e;
+/* background-color: #cccccc8e; */
+background-color: black;
 border-style: solid;
 border-color: white;
 border-radius: 25px;
@@ -261,7 +203,8 @@ border-width: 2px;
 
 
 .data1 {
-  background-color: #cccccc8e;
+  /* background-color: #cccccc8e; */
+  background-color: rgba(0, 0, 0, 0.432);
   width: 30%;
   font-family: Roboto Mono, monospace;
   font-size: 16px;
@@ -327,7 +270,8 @@ border-width: 2px;
   padding: 0px 20px;
   border-color: white;
   /* border-radius: 25px; */
-  background-color: #83BE9E;
+  /* background-color: #83BE9E; */
+  background-color: white;
 }
 
 /* #viewer {
@@ -339,6 +283,7 @@ border-width: 2px;
   width: 100%;
   height: 100vh;
   align-items: center;
+  border-radius: 25px;
 }
 
 
