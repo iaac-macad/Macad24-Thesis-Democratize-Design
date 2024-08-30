@@ -6,7 +6,7 @@ import { loadRhino } from "@/scripts/compute.js";
 import Header from "commonComponents/Header.vue";
 import GeometryView2 from "./components/GeometryView3.vue";
 import SliderInput from "./components/SliderInput.vue";
-import DropdownSelector from "./components/DropdownSelector.vue";
+import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
 import ComputeButton from "./components/ComputeButton.vue";
 import Switch from "./components/Switch02.vue";
 import Upload3dm from "./components/Upload3dm.vue";
@@ -25,21 +25,22 @@ const switchValue = ref(false);
 const switchName2 = ref("Run Initial Agg");
 const switchValue2 = ref(false);
 
-// let dropdownName = ref("Run LB")
-// let dropdownIndex = ref(0)
+// Dropdown configurations (commented out for future use)
+let dropdownName = ref("Run LB");
+let dropdownIndex = ref(0);
 
-// let dropdownName2 = ref("Run Initial Agg")
-// let dropdownIndex2 = ref(0)
+let dropdownName2 = ref("Run Initial Agg");
+let dropdownIndex2 = ref(0);
 
-// const dropdownOptions = [
-//   { label: "Not Run", value: 0 },
-//   { label: "Run", value: 1 },
-// ];
+const dropdownOptions = [
+  { label: "Not Run", value: 0 },
+  { label: "Run", value: 1 },
+];
 
-// const dropdownOptions2 = [
-//   { label: "Not Run", value: 0 },
-//   { label: "Run", value: 1 },
-// ];
+const dropdownOptions2 = [
+  { label: "Not Run", value: 0 },
+  { label: "Run", value: 1 },
+];
 
 const encodedFile = ref(null);
 const isButtonDisabled = ref(false);
@@ -47,6 +48,9 @@ const isButtonDisabled = ref(false);
 const path = def;
 const metadata = ref([]);
 const compute = ref(false);
+
+// Counter Output
+const counterValue = ref(0); // New reactive reference to store counter output
 
 // Function to update values based on parameter names
 function updateValue(newValue, parameterName) {
@@ -57,6 +61,7 @@ function updateValue(newValue, parameterName) {
   } else if (parameterName === switchName2.value) {
     switchValue2.value = newValue;
   } 
+  // Uncomment these if dropdowns are used
   // else if (parameterName === dropdownName.value) {
   //   dropdownIndex.value = newValue;
   // } 
@@ -64,6 +69,67 @@ function updateValue(newValue, parameterName) {
   //   dropdownIndex2.value = newValue;
   // }
   console.log(`${parameterName} updated to: ${newValue}`);
+}
+
+// Function to run the counter
+async function runCounter() {
+  console.log('Attempting to run counter...');
+  console.log('Switch Value 2:', switchValue2.value);
+  console.log('Metadata[3]:', metadata.value[3]);
+
+  // Ensure the switch is on and the metadata has a valid value
+  if (switchValue2.value && metadata.value[3] && metadata.value[3].value > 0) {
+    console.log('Counter conditions met. Starting counter...');
+    let current = 0;
+    const increment = 1;
+    const delay = 1000;  // 1 second delay
+
+    const intervalId = setInterval(async () => {
+      if (current <= metadata.value[3].value) {
+        try {
+          // Make the POST request to the Hops component
+          const response = await fetch('http://localhost:5000/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              current: current,
+              increment: increment,
+              target: metadata.value[3].value,
+              run: switchValue2.value,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Server error: ${response.statusText}`);
+          }
+
+          // Parse the response
+          const result = await response.json();
+          current = result.next_value;
+
+          // Update the counter value
+          counterValue.value = current;
+
+          console.log('Current Value:', current);
+
+          // Check if the count has reached the target value
+          if (current >= metadata.value[3].value) {
+            console.log('Counting complete.');
+            clearInterval(intervalId);  // Stop the interval
+          }
+        } catch (error) {
+          console.error('Error with Hops computation:', error.message);
+          clearInterval(intervalId);  // Stop the interval on error
+        }
+      } else {
+        clearInterval(intervalId);  // Stop the interval if condition fails
+      }
+    }, delay);
+  } else {
+    console.log('Counter conditions not met. Check switch and metadata values.');
+  }
 }
 
 // Function to update 3dm data
@@ -81,7 +147,9 @@ function receiveMetadata(newValue) {
 
 // Function to run compute process
 function runCompute(newVal) {
+  console.log('Compute triggered, starting counter...');
   compute.value = newVal;
+  runCounter();  // Call runCounter within the compute process
 }
 
 // Computed ref for compute data
@@ -92,8 +160,10 @@ const computeData = computed(() => {
     [sliderName.value]: Number(sliderValue.value),
     [switchName.value]: Boolean(switchValue.value),
     [switchName2.value]: Boolean(switchValue2.value),
+    // Uncomment these if dropdowns are used
     // [dropdownName.value]: Number(dropdownIndex.value),
     // [dropdownName2.value]: Number(dropdownIndex2.value),
+    counterValue: counterValue.value, // Include counter value
   };
   console.log("Computed data:", dataObject); // Debugging
   return dataObject;
@@ -101,13 +171,15 @@ const computeData = computed(() => {
 
 // Watch reactive values for debugging
 watch(
-  [encodedFile, sliderValue, switchValue, switchValue2],
+  [encodedFile, sliderValue, switchValue, switchValue2, counterValue],
   () => {
     console.log("Values updated:", {
       encodedFile: encodedFile.value,
       sliderValue: sliderValue.value,
       switchValue: switchValue.value,
       switchValue2: switchValue2.value,
+      counterValue: counterValue.value,
+      // Uncomment these if dropdowns are used
       // dropdownIndex: dropdownIndex.value,
       // dropdownIndex2: dropdownIndex2.value,
     });
@@ -116,17 +188,13 @@ watch(
 );
 </script>
 
+
 <template>
   <div id="appwindow">
     <div id="sidebar" class="container">
       <img class="mainlogo" alt="logo" src="./assets/logo.png" />
       <p id="intro">Generate housing project using graph theory and aggregation</p>
       <p id="intro">Choose location, enter program requirements, and steps below.</p>
-
-      <!-- <Upload3dm @encoded3dm="update3dmData" /> -->
-
-      <!-- <DropdownSelector :title="dropdownName" :options="dropdownOptions" :val="dropdownIndex" @update="updateValue"/>
-      <DropdownSelector :title="dropdownName2" :options="dropdownOptions2" :val="dropdownIndex2" @update="updateValue"/> -->
 
       <!-- Switch components with correct value and event binding -->
       <Switch 
@@ -140,9 +208,6 @@ watch(
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
 
-      <!-- <Switch :label="switchName" :initialValue="switchValue" @update="(newVal) => updateValue(newVal, switchName.value)" />
-      <Switch :label="switchName2" :initialValue="switchValue2" @update="(newVal) => updateValue(newVal, switchName2.value)" /> -->
-        
       <SliderInput 
         :title="sliderName" 
         :min="0" 
@@ -151,9 +216,8 @@ watch(
         :val="sliderValue" 
         @update="(newVal) => updateValue(newVal, sliderName.value)" 
       />
-      <!-- <SliderInput :title="sliderName2" :min="3.0" :max="10.0" :step="0.1" :val="4.2" @update="updateValue"></SliderInput> -->
 
-      <!-- ComputeButton components -->
+      <!-- ComputeButton components, ensure they are uncommented -->
       <ComputeButton 
         title="Compute" 
         @click="() => runCompute(true)" 
@@ -178,6 +242,10 @@ watch(
 
         <p id="para">Test:</p>
         <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}</div>
+
+        <!-- Display Counter Output Here -->
+        <p id="para">Counter Output:</p>
+        <div id="para2">{{ counterValue }}</div> <!-- Counter output added here -->
       </div>
 
       <div id="viewer" class="geometry">
@@ -247,24 +315,6 @@ watch(
   font-size: 14px;
   text-align: left;
   margin-bottom: 25px;
-}
-
-#switch-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-}
-
-#switch-label {
-  margin-right: auto; /* Pushes the label to the left */
-  font-size: 14px;
-  font-weight: lighter;
-  color: #1b314f;
-}
-
-#switch {
-  margin-left: auto; /* Pushes the switch to the far right */
 }
 
 #viewerwindow {
