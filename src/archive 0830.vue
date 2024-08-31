@@ -1,234 +1,284 @@
 <script setup>
-import { ref, onBeforeMount, computed } from "vue"
-import { loadRhino } from "@/scripts/compute.js"
+import { ref, onBeforeMount, computed, watch } from "vue";
+import { loadRhino } from "@/scripts/compute.js";
 
 // Import other Vue components in order to add them to a template.
-import Header from "commonComponents/Header.vue"
-import GeometryView2 from "./components/GeometryView2.vue"
-import SliderInput from "./components/SliderInput.vue"
-import DropdownSelector from "./components/DropdownSelector.vue"
-import ComputeButton from "./components/ComputeButton.vue"
-import Upload3dm from "./components/Upload3dm.vue"
-import { download } from "@/scripts/compute.js"
+import Header from "commonComponents/Header.vue";
+import GeometryView2 from "./components/GeometryView3.vue";
+import SliderInput from "./components/SliderInput.vue";
+import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
+import ComputeButton from "./components/ComputeButton.vue";
+import Switch from "./components/Switch02.vue";
+import Upload3dm from "./components/Upload3dm.vue";
+import { download } from "@/scripts/compute.js";
 
-import def from './assets/stick08.gh' 
+// Import Grasshopper definition file
+import def from './assets/osm_v16_3h.gh';
 
-let sliderName = ref("Interest") //must match the Input name in your GH definition!
-let sliderValue = ref(10) //default slider value
+// Define reactive references
+const sliderName = ref("Floor");
+const sliderValue = ref(0);
 
-let sliderName2 = ref("Thickness (mm)") 
-let sliderValue2 = ref(4.2) 
+const switchName = ref("Run LB");
+const switchValue = ref(false);
 
-let dropdownName = ref("Stick Length")
-let dropdownIndex = ref(2)
+const switchName2 = ref("Run Initial Agg");
+const switchValue2 = ref(false);
 
-let dropdownName2 = ref("Birth Month")
-let dropdownIndex2 = ref(3)
+// Dropdown configurations (commented out for future use)
+let dropdownName = ref("Run LB");
+let dropdownIndex = ref(0);
 
-let dropdownName3 = ref("Birth Day")
-let dropdownIndex3 = ref(25)
+let dropdownName2 = ref("Run Initial Agg");
+let dropdownIndex2 = ref(0);
 
 const dropdownOptions = [
-  { label: "Short", value: 0 },
-  { label: "Medium", value: 1 },
-  { label: "Long", value: 2 },
-  { label: "Custom", value: 3 },
+  { label: "Not Run", value: 0 },
+  { label: "Run", value: 1 },
 ];
 
 const dropdownOptions2 = [
-  { label: "Janurary", value: 1 },
-  { label: "February", value: 2 },
-  { label: "March", value: 3 },
-  { label: "April", value: 4 },
-  { label: "May", value: 5 },
-  { label: "June", value: 6 },
-  { label: "July", value: 7 },
-  { label: "August", value: 8 },
-  { label: "September", value: 9 },
-  { label: "October", value: 10 },
-  { label: "November", value: 11 },
-  { label: "December", value: 12 },
+  { label: "Not Run", value: 0 },
+  { label: "Run", value: 1 },
 ];
 
-const dropdownOptions3 = [
-  { label: "1", value: 1 },
-  { label: "2", value: 2 },
-  { label: "3", value: 3 },
-  { label: "4", value: 4 },
-  { label: "5", value: 5 },
-  { label: "6", value: 6 },
-  { label: "7", value: 7 },
-  { label: "8", value: 8 },
-  { label: "9", value: 9 },
-  { label: "10", value: 10 },
-  { label: "11", value: 11 },
-  { label: "12", value: 12 },
-  { label: "13", value: 13 },
-  { label: "14", value: 14 },
-  { label: "15", value: 15 },
-  { label: "16", value: 16 },
-  { label: "17", value: 17 },
-  { label: "18", value: 18 },
-  { label: "19", value: 19 },
-  { label: "20", value: 20 },
-  { label: "21", value: 21 },
-  { label: "22", value: 22 },
-  { label: "23", value: 23 },
-  { label: "24", value: 24 },
-  { label: "25", value: 25 },
-  { label: "26", value: 26 },
-  { label: "27", value: 27 },
-  { label: "28", value: 28 },
-  { label: "29", value: 29 },
-  { label: "30", value: 30 },
-  { label: "31", value: 31 },
-];
+const encodedFile = ref(null);
+const isButtonDisabled = ref(false);
 
-let encodedFile = ref(null);
-let isButtonDisabled = ref(false)
+const path = def;
+const metadata = ref([]);
+const compute = ref(false);
 
-///.............................................
-let path = def //path to the Grasshopper definition
-let data = ref({})
-let metadata = ref([])
-let compute = ref(false)
+// Counter Output
+const counterValue = ref(0); // New reactive reference to store counter output
 
-
+// Function to update values based on parameter names
 function updateValue(newValue, parameterName) {
-
   if (parameterName === sliderName.value) {
-    sliderValue.value = newValue
-  }
-
-  else if (parameterName === sliderName2.value) {
-    sliderValue2.value = newValue
-  }
-
-  else if (parameterName === dropdownName.value) {
-    dropdownIndex.value = newValue
-  }
-
-  else if (parameterName === dropdownName2.value) {
-    dropdownIndex2.value = newValue
-  }
-
-  else if (parameterName === dropdownName3.value) {
-    dropdownIndex3.value = newValue
-  }
-
-  console.log(parameterName + " : " + newValue)
+    sliderValue.value = newValue;
+  } else if (parameterName === switchName.value) {
+    switchValue.value = newValue;
+  } else if (parameterName === switchName2.value) {
+    switchValue2.value = newValue;
+  } 
+  // Uncomment these if dropdowns are used
+  // else if (parameterName === dropdownName.value) {
+  //   dropdownIndex.value = newValue;
+  // } 
+  // else if (parameterName === dropdownName2.value) {
+  //   dropdownIndex2.value = newValue;
+  // }
+  console.log(`${parameterName} updated to: ${newValue}`);
 }
 
+// Function to run the counter
+async function runCounter() {
+  console.log('Attempting to run counter...');
+  console.log('Switch Value 2:', switchValue2.value);
+  console.log('Metadata[3]:', metadata.value[3]);
+
+  // Ensure the switch is on and the metadata has a valid value
+  if (switchValue2.value && metadata.value[3] && metadata.value[3].value > 0) {
+    console.log('Counter conditions met. Starting counter...');
+    let current = 0;
+    const increment = 1;
+    const delay = 1000;  // 1 second delay
+
+    const intervalId = setInterval(async () => {
+      if (current <= metadata.value[3].value) {
+        try {
+          // Make the POST request to the Hops component
+          const response = await fetch('http://localhost:5000/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              current: current,
+              increment: increment,
+              target: metadata.value[3].value,
+              run: switchValue2.value,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Server error: ${response.statusText}`);
+          }
+
+          // Parse the response
+          const result = await response.json();
+          current = result.next_value;
+
+          // Update the counter value
+          counterValue.value = current;
+
+          console.log('Current Value:', current);
+
+          // Check if the count has reached the target value
+          if (current >= metadata.value[3].value) {
+            console.log('Counting complete.');
+            clearInterval(intervalId);  // Stop the interval
+          }
+        } catch (error) {
+          console.error('Error with Hops computation:', error.message);
+          clearInterval(intervalId);  // Stop the interval on error
+        }
+      } else {
+        clearInterval(intervalId);  // Stop the interval if condition fails
+      }
+    }, delay);
+  } else {
+    console.log('Counter conditions not met. Check switch and metadata values.');
+  }
+}
+
+// Function to update 3dm data
 function update3dmData(newData) {
-  encodedFile.value = newData
-  isButtonDisabled.value = false
-  compute.value = true
-
+  encodedFile.value = newData;
+  isButtonDisabled.value = false;
+  compute.value = true;
 }
 
+// Function to receive metadata
 function receiveMetadata(newValue) {
-  console.log(newValue)
-  metadata.value = newValue
+  console.log("Received metadata:", newValue);
+  metadata.value = newValue;
 }
 
+// Function to run compute process
 function runCompute(newVal) {
-  compute.value = newVal
+  console.log('Compute triggered, starting counter...');
+  compute.value = newVal;
+  runCounter();  // Call runCounter within the compute process
 }
 
-// a computed ref. Vue will keep track of this and update it
+// Computed ref for compute data
 const computeData = computed(() => {
-  let file
-  if (!encodedFile.value) {
-      file = "empty"
-  }
-  else file = encodedFile.value
-  // console.log(encodedFile.value, file)
-  data = {
+  let file = encodedFile.value || "empty";
+  const dataObject = {
     ["encodedFile"]: file,
     [sliderName.value]: Number(sliderValue.value),
-    [sliderName2.value]: Number(sliderValue2.value),
-    [dropdownName.value]: Number(dropdownIndex.value),
-    [dropdownName2.value]: Number(dropdownIndex2.value),
-    [dropdownName3.value]: Number(dropdownIndex3.value),
+    [switchName.value]: Boolean(switchValue.value),
+    [switchName2.value]: Boolean(switchValue2.value),
+    // Uncomment these if dropdowns are used
+    // [dropdownName.value]: Number(dropdownIndex.value),
+    // [dropdownName2.value]: Number(dropdownIndex2.value),
+    counterValue: counterValue.value, // Include counter value
   };
+  console.log("Computed data:", dataObject); // Debugging
+  return dataObject;
+});
 
-  return data
-})
-
+// Watch reactive values for debugging
+watch(
+  [encodedFile, sliderValue, switchValue, switchValue2, counterValue],
+  () => {
+    console.log("Values updated:", {
+      encodedFile: encodedFile.value,
+      sliderValue: sliderValue.value,
+      switchValue: switchValue.value,
+      switchValue2: switchValue2.value,
+      counterValue: counterValue.value,
+      // Uncomment these if dropdowns are used
+      // dropdownIndex: dropdownIndex.value,
+      // dropdownIndex2: dropdownIndex2.value,
+    });
+  },
+  { deep: true }
+);
 </script>
 
 
-
 <template>
-  <div id="appwindow" >
+  <div id="appwindow">
     <div id="sidebar" class="container">
       <img class="mainlogo" alt="logo" src="./assets/logo.png" />
-      <p id="intro">Design a custom branch for your best friend. Use your dog's birthday to generate a one-of-a-kind stick!</p>
-      <p id="intro">For more control, upload your 3dm file with a simple polyline (~1m long or less) and a basic brep or mesh shape. 
-        The brep/mesh will control the direction of the smaller twigs. Use the inputs below to customize.</p>
+      <p id="intro">Generate housing project using graph theory and aggregation</p>
+      <p id="intro">Choose location, enter program requirements, and steps below.</p>
 
-      <Upload3dm @encoded3dm="update3dmData" />
+      <!-- Switch components with correct value and event binding -->
+      <Switch 
+        :label="switchName" 
+        :initialValue="switchValue" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
+      />
+      <Switch 
+        :label="switchName2" 
+        :initialValue="switchValue2" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
+      />
 
-      <DropdownSelector :title="dropdownName" :options="dropdownOptions" :val="dropdownIndex" @update="updateValue"/>
-      <DropdownSelector :title="dropdownName2" :options="dropdownOptions2" :val="dropdownIndex2" @update="updateValue"/>
-      <DropdownSelector :title="dropdownName3" :options="dropdownOptions3" :val="dropdownIndex3" @update="updateValue"/>
+      <SliderInput 
+        :title="sliderName" 
+        :min="0" 
+        :max="20" 
+        :step="1" 
+        :val="sliderValue" 
+        @update="(newVal) => updateValue(newVal, sliderName.value)" 
+      />
 
-      <SliderInput :title="sliderName" :min="6" :max="16" :step="1" :val="10" @update="updateValue"></SliderInput>
-      <SliderInput :title="sliderName2" :min="3.0" :max="10.0" :step="0.1" :val="4.2" @update="updateValue"></SliderInput>
-
-      <ComputeButton title="Compute" @click="runCompute" :isDisabled="isButtonDisabled" />
-      <ComputeButton title="Download 3dm" @click="download('CustomStick')">Download 3dm</ComputeButton>
-
+      <!-- ComputeButton components, ensure they are uncommented -->
+      <ComputeButton 
+        title="Compute" 
+        @click="() => runCompute(true)" 
+        :isDisabled="isButtonDisabled" 
+      />
+      <ComputeButton 
+        title="Download 3dm" 
+        @click="download('CustomStick')" 
+      >Download 3dm</ComputeButton>
     </div>
 
-
-
-    <div id="viewerwindow" >
-      
+    <div id="viewerwindow">
       <div id="Construction" class="data1">
-        <p id="para">Price:</p>
-        <div id="para2" v-if="metadata[1]">${{ metadata[1].value }}</div>
+        <p id="para">1-bedroom apartments:</p>
+        <div id="para2" v-if="metadata[0]">{{ metadata[0].value }}</div>
 
-        <p id="para">Ideal for Breeds like:</p>
+        <p id="para">2-bedroom apartments:</p>
+        <div id="para2" v-if="metadata[1]">{{ metadata[1].value }}</div>
+
+        <p id="para">3-bedroom apartments:</p>
         <div id="para2" v-if="metadata[2]">{{ metadata[2].value }}</div>
 
-        <p id="para">Level of Car Scratch Damage:</p>
+        <p id="para">Test:</p>
         <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}</div>
 
+        <!-- Display Counter Output Here -->
+        <p id="para">Counter Output:</p>
+        <div id="para2">{{ counterValue }}</div> <!-- Counter output added here -->
       </div>
-
 
       <div id="viewer" class="geometry">
-        <GeometryView2 :data="computeData" :path="path" :runCompute="compute" @updateMetadata="receiveMetadata" />
+        <GeometryView2 
+          :data="computeData" 
+          :path="path" 
+          :runCompute="compute" 
+          @updateMetadata="receiveMetadata" 
+        />
       </div>
-
     </div>
-
   </div>
 </template>
-  
-  
-<style scoped>
 
+<style scoped>
 #appwindow {
   display: flex;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   padding: 20px;
-  background-color:#82bd9d
+  background-color: white;
 }
 
-.container{
-background-color: #cccccc8e;
-border-style: solid;
-border-color: white;
-border-radius: 25px;
-border-width: 2px;
+.container {
+  background-color: black;
+  border-style: solid;
+  border-color: white;
+  border-radius: 25px;
+  border-width: 2px;
 }
-
 
 .data1 {
-  background-color: #cccccc8e;
+  background-color: rgba(0, 0, 0, 0.432);
   width: 30%;
   font-family: Roboto Mono, monospace;
   font-size: 16px;
@@ -243,23 +293,23 @@ border-width: 2px;
 
 #sidebar {
   width: 310px;
+  height: 800px;
   padding: 20px;
 }
 
-#intro{
+#intro {
   font-family: Roboto Mono, monospace;
   font-size: 14px;
 }
 
-
-#para{
+#para {
   font-family: Roboto Mono, monospace;
   font-size: 16px;
   text-align: left;
   margin-bottom: 0px;
 }
 
-#para2{
+#para2 {
   font-family: Roboto Mono, monospace;
   font-style: italic;
   font-size: 14px;
@@ -271,19 +321,19 @@ border-width: 2px;
   display: flex;
   flex-direction: column;
   width: calc(100% - 580px);
-  height: calc(100% - 40px);
+  height: 100vh;
   gap: 10px;
   padding: 0px 20px;
   border-color: white;
-  border-radius: 25px;
-  background-color: #83be9e;
+  background-color: white;
 }
 
 #viewer {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  align-items: center;
+  border-radius: 25px;
 }
-
 
 #Construction {
   position: absolute;
@@ -293,24 +343,27 @@ border-width: 2px;
 
 .mainlogo {
   width: 100%;
-  height: 10%;  
+  height: 10%;
 }
 
 .modern-range {
   -webkit-appearance: none;
   width: 100%;
-  background: linear-gradient(90deg, #ffffff, #ff0080);
-  height: 17px;
-  border-radius: 15px;
-  margin: 10px 0px;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #000 0%, #8a8a8a 50%, #6d6d6d 50%, #8d8d8d 100%);
+  outline: none;
+  margin: 8px 0px;
+  background-image: -webkit-repeating-linear-gradient(left, #8a8a8a, #8a8a8a 1px, transparent 1px, transparent 4px);
 }
 
 .modern-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 15px;
-  width: 15px;
-  border-radius: 15px;
-  background-color: black;
-  cursor: pointer;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: grey;
+  cursor: grab;
 }
 </style>
