@@ -4,7 +4,7 @@ import { loadRhino } from "@/scripts/compute.js";
 
 // Import other Vue components in order to add them to a template.
 import Header from "commonComponents/Header.vue";
-import GeometryView2 from "./components/GeometryView3.vue";
+import GeometryView2 from "./components/GeometryView4.vue";
 import SliderInput from "./components/SliderInput.vue";
 import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
 import ComputeButton from "./components/ComputeButton.vue";
@@ -16,31 +16,44 @@ import { download } from "@/scripts/compute.js";
 import def from './assets/osm_v16_3h.gh';
 
 // Define reactive references
-const sliderName = ref("Floor");
-const sliderValue = ref(0);
+const sliderName = ref("2D_UrbanField");
+const sliderValue = ref(0.7);
 
-const switchName = ref("Run LB");
-const switchValue = ref(false);
+const sliderName2 = ref("2E_RadField");
+const sliderValue2 = ref(0.5);
 
-const switchName2 = ref("Run Initial Agg");
-const switchValue2 = ref(false);
+const sliderName3 = ref("2F_SVField");
+const sliderValue3 = ref(0.0);
+
+// Metahopper toggle for initial aggregation not working. Making these true by default in the GH script.
+// const switchName = ref("2A_Init Init Aggr");
+// const switchValue = ref(false);
+
+// const switchName2 = ref("2B_Run Initial Aggr");
+// const switchValue2 = ref(false);
+
+const switchName3 = ref("2C_Run LB");
+const switchValue3 = ref(false);
+
+const switchName9 = ref("3C_Record");
+const switchValue9 = ref(false);
 
 // Dropdown configurations (commented out for future use)
-let dropdownName = ref("Run LB");
-let dropdownIndex = ref(0);
+// let dropdownName = ref("Run LB");
+// let dropdownIndex = ref(0);
 
-let dropdownName2 = ref("Run Initial Agg");
-let dropdownIndex2 = ref(0);
+// let dropdownName2 = ref("Run Initial Agg");
+// let dropdownIndex2 = ref(0);
 
-const dropdownOptions = [
-  { label: "Not Run", value: 0 },
-  { label: "Run", value: 1 },
-];
+// const dropdownOptions = [
+//   { label: "Not Run", value: 0 },
+//   { label: "Run", value: 1 },
+// ];
 
-const dropdownOptions2 = [
-  { label: "Not Run", value: 0 },
-  { label: "Run", value: 1 },
-];
+// const dropdownOptions2 = [
+//   { label: "Not Run", value: 0 },
+//   { label: "Run", value: 1 },
+// ];
 
 const encodedFile = ref(null);
 const isButtonDisabled = ref(false);
@@ -56,10 +69,18 @@ const counterValue = ref(0); // New reactive reference to store counter output
 function updateValue(newValue, parameterName) {
   if (parameterName === sliderName.value) {
     sliderValue.value = newValue;
-  } else if (parameterName === switchName.value) {
-    switchValue.value = newValue;
-  } else if (parameterName === switchName2.value) {
-    switchValue2.value = newValue;
+  } else if (parameterName === sliderName2.value) {
+    sliderValue2.value = newValue;
+  } else if (parameterName === sliderName3.value) {
+    sliderValue3.value = newValue;
+  // } else if (parameterName === switchName.value) {
+  //   switchValue.value = newValue;
+  // } else if (parameterName === switchName2.value) {
+  //   switchValue2.value = newValue;
+  } else if (parameterName === switchName3.value) {
+    switchValue3.value = newValue;
+  } else if (parameterName === switchName9.value) {
+    switchValue9.value = newValue;
   } 
   // Uncomment these if dropdowns are used
   // else if (parameterName === dropdownName.value) {
@@ -74,11 +95,11 @@ function updateValue(newValue, parameterName) {
 // Function to run the counter
 async function runCounter() {
   console.log('Attempting to run counter...');
-  console.log('Switch Value 2:', switchValue2.value);
+  console.log('Switch Value 9:', switchValue9.value);
   console.log('Metadata[3]:', metadata.value[3]);
 
   // Ensure the switch is on and the metadata has a valid value
-  if (switchValue2.value && metadata.value[3] && metadata.value[3].value > 0) {
+  if (switchValue9.value && metadata.value[3] && metadata.value[3].value > 0) {
     console.log('Counter conditions met. Starting counter...');
     let current = 0;
     const increment = 1;
@@ -97,7 +118,7 @@ async function runCounter() {
               current: current,
               increment: increment,
               target: metadata.value[3].value,
-              run: switchValue2.value,
+              run: switchValue9.value,
             }),
           });
 
@@ -158,8 +179,12 @@ const computeData = computed(() => {
   const dataObject = {
     ["encodedFile"]: file,
     [sliderName.value]: Number(sliderValue.value),
-    [switchName.value]: Boolean(switchValue.value),
-    [switchName2.value]: Boolean(switchValue2.value),
+    [sliderName2.value]: Number(sliderValue2.value),
+    [sliderName3.value]: Number(sliderValue3.value),
+    // [switchName.value]: Boolean(switchValue.value),
+    // [switchName2.value]: Boolean(switchValue2.value),
+    [switchName3.value]: Boolean(switchValue3.value),
+    [switchName9.value]: Boolean(switchValue9.value),
     // Uncomment these if dropdowns are used
     // [dropdownName.value]: Number(dropdownIndex.value),
     // [dropdownName2.value]: Number(dropdownIndex2.value),
@@ -171,13 +196,17 @@ const computeData = computed(() => {
 
 // Watch reactive values for debugging
 watch(
-  [encodedFile, sliderValue, switchValue, switchValue2, counterValue],
+  [encodedFile, sliderValue, sliderValue2, sliderValue3, switchValue3, switchValue9, counterValue],
   () => {
     console.log("Values updated:", {
       encodedFile: encodedFile.value,
       sliderValue: sliderValue.value,
-      switchValue: switchValue.value,
-      switchValue2: switchValue2.value,
+      sliderValue2: sliderValue2.value,
+      sliderValue3: sliderValue3.value,
+      // switchValue: switchValue.value,
+      // switchValue2: switchValue2.value,
+      switchValue3: switchValue3.value,
+      switchValue9: switchValue9.value,
       counterValue: counterValue.value,
       // Uncomment these if dropdowns are used
       // dropdownIndex: dropdownIndex.value,
@@ -197,7 +226,7 @@ watch(
       <p id="intro">Choose location, enter program requirements, and steps below.</p>
 
       <!-- Switch components with correct value and event binding -->
-      <Switch 
+      <!-- <Switch 
         :label="switchName" 
         :initialValue="switchValue" 
         @update="(newVal, label) => updateValue(newVal, label)"  
@@ -206,15 +235,43 @@ watch(
         :label="switchName2" 
         :initialValue="switchValue2" 
         @update="(newVal, label) => updateValue(newVal, label)"  
+      /> -->
+      <Switch 
+        :label="switchName3" 
+        :initialValue="switchValue3" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
       />
-
       <SliderInput 
         :title="sliderName" 
-        :min="0" 
-        :max="20" 
-        :step="1" 
+        :min="0.0" 
+        :max="1.0" 
+        :step="0.1" 
         :val="sliderValue" 
         @update="(newVal) => updateValue(newVal, sliderName.value)" 
+      />
+      <SliderInput 
+        :title="sliderName2" 
+        :min="0.0" 
+        :max="1.0" 
+        :step="0.1" 
+        :val="sliderValue2" 
+        @update="(newVal) => updateValue(newVal, sliderName2.value)" 
+      />
+      <SliderInput 
+        :title="sliderName3" 
+        :min="0.0" 
+        :max="1.0" 
+        :step="0.1" 
+        :val="sliderValue3" 
+        @update="(newVal) => updateValue(newVal, sliderName3.value)" 
+      />
+
+
+
+      <Switch 
+        :label="switchName9" 
+        :initialValue="switchValue9" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
       />
 
       <!-- ComputeButton components, ensure they are uncommented -->
