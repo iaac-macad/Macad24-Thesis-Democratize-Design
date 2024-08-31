@@ -13,7 +13,8 @@ import Upload3dm from "./components/Upload3dm.vue";
 import { download } from "@/scripts/compute.js";
 
 // Import Grasshopper definition file
-import def from './assets/osm_v16_3h.gh';
+// import def from './assets/osm_v16_3h.gh';
+import def from './assets/osm_v17.gh';
 
 // Define reactive references
 const sliderName = ref("2D_UrbanField");
