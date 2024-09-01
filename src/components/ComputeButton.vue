@@ -1,12 +1,13 @@
 <template>
   <div id="app">
-    <button class="compute-button"
-    @mousedown="onButtonClick(true)"
-    @mouseup="onButtonClick(false)"
-    :disabled="isDisabled"
+    <button
+      class="compute-button"
+      @click="toggleEmitting"
+      :disabled="isDisabled"
     >{{ titlec }}</button>
   </div>
 </template>
+
 
 <script setup>
 import { ref } from "vue";
@@ -16,13 +17,39 @@ const emits = defineEmits(["toggleCompute"]);
 const props = defineProps(["title", "isDisabled"]);
 const titlec = ref(props.title);
 const isActive = ref(false);
+let isEmitting = ref(false); // State to check if currently emitting
+let intervalId = null;  // To store the interval ID
 
+function toggleEmitting() {
+  if (isEmitting.value) {
+    stopEmitting(); // Stop emitting if already emitting
+  } else {
+    startEmitting(); // Start emitting if not already emitting
+  }
+}
 
-async function onButtonClick(state) {
-  isActive.value = state
-  emits("toggleCompute", isActive.value );
+function startEmitting() {
+  isEmitting.value = true;
+  isActive.value = true;
+  emitContinuously();  // Start emitting immediately
+  // Set interval to emit continuously
+  intervalId = setInterval(() => {
+    emitContinuously();
+  }, 100);  // Adjust the interval time as needed (in milliseconds)
+}
+
+function stopEmitting() {
+  isEmitting.value = false;
+  isActive.value = false;
+  clearInterval(intervalId);  // Stop the interval
+  emits("toggleCompute", isActive.value);  // Emit once when stopping
+}
+
+function emitContinuously() {
+  emits("toggleCompute", isActive.value);  // Emit the event
 }
 </script>
+
 
 <style scoped>
 

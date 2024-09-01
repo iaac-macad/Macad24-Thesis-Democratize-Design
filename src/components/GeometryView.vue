@@ -24,27 +24,6 @@ const props = defineProps(["data", "path", "runCompute"]);
 const emits = defineEmits(["updateMetadata"]);  
 
 
-
-
-
-// let isThreeJsInitialized = false;
-
-// onMounted(() => {
-//   init();  // Make sure Three.js is initialized first
-//   isThreeJsInitialized = true;
-// });
-
-// watch(() => props.runCompute, (newValue) => {
-//   if (newValue && isThreeJsInitialized) {
-//     compute();
-//   }
-// });
-
-
-
-
-
-
 watch(() => props.runCompute, (newValue) => {
   if (newValue) {
     compute();
@@ -61,6 +40,8 @@ function init() {
   // This object will render our scene
   renderer = new THREE.WebGLRenderer()
 
+  THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
+
   container = document.getElementById("threejs-container")
 
   // Rendered needs to know what's the size of the scene. 
@@ -69,28 +50,46 @@ function init() {
   // We are taking element defined in <template> and appending our render to it. 
     container.appendChild(renderer.domElement)
 
-  //orient object
-  THREE.Object3D.DEFAULT_UP.set( 0, 0, 1 );
+  
 
-  // https://threejs.org/docs/#api/en/cameras/PerspectiveCamera
-  camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000)
-  camera.position.set(0, 0, 40)
+// https://threejs.org/docs/#api/en/cameras/OrthographicCamera
+camera = new THREE.OrthographicCamera(
+  container.offsetWidth / -0.08,   // left
+  container.offsetWidth / 0.08,    // right
+  container.offsetHeight / 0.08,   // top
+  container.offsetHeight / -0.08,  // bottom
+  1,
+  200000000
+);
 
+// Set the position to the opposite corner
+camera.position.set(100000, -100000, 100000);
+
+// Set the target to the center
+camera.up.set(0, 0, 1); // Set the up direction to be along the Z-axis
+camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+// Remove the perspective camera settings
+// camera = new THREE.PerspectiveCamera(10, 2, 1, 200000000);
+// camera.position.set(-100000, 0, 0);
   // https://threejs.org/docs/?q=scene#api/en/scenes/Scene
   scene = new THREE.Scene()
   scene.background = new THREE.Color("#f5f6fa")
 
   // orbit controls
   controls = new OrbitControls(camera, renderer.domElement)
+  controls.target.set(0, 0, 0);  // Set the target to the center of your scene
+  controls.enableDamping = true;  // an animation loop is required when either damping or auto-rotation are enabled
+  controls.dampingFactor = 0.25; 
+
+  
+
+
 
   // add some ambient light here
-  const ambientlight = new THREE.AmbientLight(0xffffff, 1)
-  ambientlight.position.set(0, 0, 0)
-  scene.add(ambientlight)
-
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
-  directionalLight.position.set(0, 1, 0)
-  scene.add(directionalLight)
+  const directionalLight = new THREE.DirectionalLight(0xffffff);
+  directionalLight.intensity = 2;
+  scene.add(directionalLight);
 
 
   // add fun shape
@@ -106,7 +105,8 @@ async function compute() {
   if (doc.metadata) {
     emits("updateMetadata", doc.metadata);
   }
-
+  
+  
   // clear objects from scene
   scene.traverse((child) => {
     if (!child.isLight) {
@@ -121,41 +121,17 @@ async function compute() {
     // add object graph from rhino model to three.js scene
     object.traverse((child) => {
 
-      const mat = new THREE.MeshNormalMaterial()
-      child.material = mat
+      console.log(child)
+
+      if (child.isLine) {
 
 
-      // if (child.isLine) {
-      //   if (child.userData.attributes.userStrings!= undefined && child.userData.attributes.userStrings.length > 0) {
-      //       //get color from userStrings
-      //       const colorData = child.userData.attributes.userStrings[0]
-      //       const col = colorData[1]
-
-      //       //convert color from userstring to THREE color and assign it
-      //       const threeColor = new THREE.Color("rgb(" + col + ")")
-      //       const mat = new THREE.LineBasicMaterial({ color: threeColor })
-      //       child.material = mat
-
-      //   }
-
-      // }
-
-
+      }
     })
 
 
-    scene.add(object)
 
-    // zoom to extents
-    for (let child of scene.children) {
-        if (child.type == "Object3D") {
-          // zoom to extents
-          zoomCameraToSelection(camera, controls, child.children)
-
-        }
-      }
-      
-
+    scene.add(object);
     console.log("Compute done")
   });
 }
@@ -188,56 +164,18 @@ function onWindowResize() {
 
 }
 
-/**
- * Helper function that behaves like rhino's "zoom to selection", but for three.js!
- */
- function zoomCameraToSelection(camera, controls, selection, fitOffset = 1.1) {
-
-const box = new THREE.Box3();
-
-for (const object of selection) {
-  if (object.isLight) continue
-  box.expandByObject(object);
-}
-
-const size = box.getSize(new THREE.Vector3());
-const center = box.getCenter(new THREE.Vector3());
-
-const maxSize = Math.max(size.x, size.y, size.z);
-const fitHeightDistance = maxSize / (2 * Math.atan(Math.PI * camera.fov / 360));
-const fitWidthDistance = fitHeightDistance / camera.aspect;
-const distance = fitOffset * Math.max(fitHeightDistance, fitWidthDistance);
-
-const direction = controls.target.clone()
-  .sub(camera.position)
-  .normalize()
-  .multiplyScalar(distance);
-controls.maxDistance = distance * 10;
-controls.target.copy(center);
-
-camera.near = distance / 100;
-camera.far = distance * 100;
-camera.updateProjectionMatrix();
-camera.position.copy(controls.target).sub(direction);
-
-controls.update();
-
-}
-
-
 
 // This will be run whenever this component is instantiated
 onMounted(async() => {
   init()
   await loadRhino()
-  // compute();
+  compute();
 })
 
-// //onUpdated is called when an input prop is changed
-// // this runs compute whenever the input data changes
-// onUpdated(() => {
-//   compute();
-// })
+//onUpdated is called when an input prop is changed
+onUpdated(() => {
+  compute();
+})
 
 
 
@@ -247,17 +185,17 @@ onMounted(async() => {
 
 
 #viewport {
-  height: 100vh;
-  width: 100vw;
+
+  height: 100%;
+  width: 100%;
   min-width: 200px;
-  min-height: 200px;
   position:inherit;
 }
+
 #threejs-container {
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   min-width: 200px;
-  min-height: 200px;
   position:inherit;
 }
 

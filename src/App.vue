@@ -1,171 +1,139 @@
 <script setup>
+// Understanding ref article: https://blog.logrocket.com/understanding-vue-refs/#:~:text=Ref%20s%20are%20Vue.,element%20in%20your%20Vue%20instance.
+// When ref attribute is added to element, this element then can be referenced
+// in template. It is sort of templatecement of getElementById (but better)
 import { ref, onBeforeMount, computed, watch } from "vue";
-import { loadRhino } from "@/scripts/compute.js";
 
 // Import other Vue components in order to add them to a template.
-import Header from "commonComponents/Header.vue";
-import GeometryView2 from "./components/GeometryView4.vue";
+import GeometryView4 from "./components/GeometryView4.vue";
 import SliderInput from "./components/SliderInput.vue";
-import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
-import ComputeButton from "./components/ComputeButton.vue";
 import Switch from "./components/Switch02.vue";
-import Upload3dm from "./components/Upload3dm.vue";
-import { download } from "@/scripts/compute.js";
+import ComputeButton from "./components/ComputeButton.vue";
 
-// Import Grasshopper definition file
-// import def from './assets/osm_v16_3h.gh';
+//Import and define Store
+import {useComputeStore} from "@/stores/computeStore.js"
+const computeStore = useComputeStore()
+
 import def from './assets/osm_v17.gh';
 
-// Define reactive references
-const sliderName = ref("2D_UrbanField");
-const sliderValue = ref(0.7);
+//-------------------------------------------------------------------------------------------------------------------------------------------
 
-const sliderName2 = ref("2E_RadField");
-const sliderValue2 = ref(0.5);
+//Part 01 Inputs 
 
-const sliderName3 = ref("2F_SVField");
-const sliderValue3 = ref(0.0);
+//Need to add the text input for the site selection 
 
-// Metahopper toggle for initial aggregation not working. Making these true by default in the GH script.
-// const switchName = ref("2A_Init Init Aggr");
-// const switchValue = ref(false);
+//Part 02 inputs 
 
-// const switchName2 = ref("2B_Run Initial Aggr");
-// const switchValue2 = ref(false);
+const firstSliderName = ref("2D_UrbanField") //must match the Input name in your GH definition!
+const firstSliderValue = ref(0.7) //default slider value
+
+const secondSliderName = ref("2E_RadField") //must match the Input name in your GH definition!
+const secondSliderValue = ref(0.5) //default slider value
+
+const thirdSliderName = ref("2F_SVField") //must match the Input name in your GH definition!
+const thirdSliderValue = ref(0.0) //default slider value
+
+const switchName = ref("2A_Init Init Aggr");
+const switchValue = ref(false);
+
+const switchName2 = ref("2B_Run Initial Aggr");
+const switchValue2 = ref(false);
 
 const switchName3 = ref("2C_Run LB");
 const switchValue3 = ref(false);
 
-const switchName9 = ref("3C_Record");
-const switchValue9 = ref(false);
+//Part 03 inputs 
 
-// Dropdown configurations (commented out for future use)
-// let dropdownName = ref("Run LB");
-// let dropdownIndex = ref(0);
+const switchName4 = ref("3A_Init Final Agg");
+const switchValue4 = ref(false);
 
-// let dropdownName2 = ref("Run Initial Agg");
-// let dropdownIndex2 = ref(0);
+const switchName5 = ref("3B_Cores");
+const switchValue5 = ref(false);
 
-// const dropdownOptions = [
-//   { label: "Not Run", value: 0 },
-//   { label: "Run", value: 1 },
-// ];
+const switchName6 = ref("3C_Reset");
+const switchValue6 = ref(false);
 
-// const dropdownOptions2 = [
-//   { label: "Not Run", value: 0 },
-//   { label: "Run", value: 1 },
-// ];
+const switchName7 = ref("3D_Record");
+const switchValue7 = ref(false);
 
+// Part 04 - Counter Output
+
+const countername = ref("4_Floor")
+const counterValue = ref(0); // New reactive reference to store counter output
+
+///-----------------------------------------------------------------------------------------------------------------------------------------------
 const encodedFile = ref(null);
 const isButtonDisabled = ref(false);
 
-const path = def;
-const metadata = ref([]);
-const compute = ref(false);
+let path = def //path to the Grasshopper definition
+let data = ref({})
+let metadata = ref([])
+let compute = ref(false)
 
-// Counter Output
-const counterValue = ref(0); // New reactive reference to store counter output
 
-// Function to update values based on parameter names
+///-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
 function updateValue(newValue, parameterName) {
-  if (parameterName === sliderName.value) {
-    sliderValue.value = newValue;
-  } else if (parameterName === sliderName2.value) {
-    sliderValue2.value = newValue;
-  } else if (parameterName === sliderName3.value) {
-    sliderValue3.value = newValue;
-  // } else if (parameterName === switchName.value) {
-  //   switchValue.value = newValue;
-  // } else if (parameterName === switchName2.value) {
-  //   switchValue2.value = newValue;
-  } else if (parameterName === switchName3.value) {
-    switchValue3.value = newValue;
-  } else if (parameterName === switchName9.value) {
-    switchValue9.value = newValue;
+  console.log(parameterName)
+
+  if (parameterName === firstSliderName.value) {
+    firstSliderValue.value = newValue
   } 
-  // Uncomment these if dropdowns are used
-  // else if (parameterName === dropdownName.value) {
-  //   dropdownIndex.value = newValue;
-  // } 
-  // else if (parameterName === dropdownName2.value) {
-  //   dropdownIndex2.value = newValue;
-  // }
-  console.log(`${parameterName} updated to: ${newValue}`);
-}
-
-// Function to run the counter
-async function runCounter() {
-  console.log('Attempting to run counter...');
-  console.log('Switch Value 9:', switchValue9.value);
-  console.log('Metadata[3]:', metadata.value[3]);
-
-  // Ensure the switch is on and the metadata has a valid value
-  if (switchValue9.value && metadata.value[3] && metadata.value[3].value > 0) {
-    console.log('Counter conditions met. Starting counter...');
-    let current = 0;
-    const increment = 1;
-    const delay = 1000;  // 1 second delay
-
-    const intervalId = setInterval(async () => {
-      if (current <= metadata.value[3].value) {
-        try {
-          // Make the POST request to the Hops component
-          const response = await fetch('http://localhost:5000/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              current: current,
-              increment: increment,
-              target: metadata.value[3].value,
-              run: switchValue9.value,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error(`Server error: ${response.statusText}`);
-          }
-
-          // Parse the response
-          const result = await response.json();
-          current = result.next_value;
-
-          // Update the counter value
-          counterValue.value = current;
-
-          console.log('Current Value:', current);
-
-          // Check if the count has reached the target value
-          if (current >= metadata.value[3].value) {
-            console.log('Counting complete.');
-            clearInterval(intervalId);  // Stop the interval
-          }
-        } catch (error) {
-          console.error('Error with Hops computation:', error.message);
-          clearInterval(intervalId);  // Stop the interval on error
-        }
-      } else {
-        clearInterval(intervalId);  // Stop the interval if condition fails
-      }
-    }, delay);
-  } else {
-    console.log('Counter conditions not met. Check switch and metadata values.');
+  
+  else if (parameterName === secondSliderName.value) {
+    secondSliderValue.value = newValue
   }
+  
+  else if (parameterName === thirdSliderName.value) {
+    thirdSliderValue.value = newValue
+  }
+
+  else if (parameterName === switchName.value) {
+    switchValue.value = newValue;
+  } 
+
+  else if (parameterName === switchName2.value) {
+    switchValue2.value = newValue;
+  } 
+
+  else if (parameterName === switchName3.value) {
+    switchValue3.value = newValue;
+  } 
+
+  else if (parameterName === switchName4.value) {
+    switchValue4.value = newValue;
+  } 
+
+  else if (parameterName === switchName5.value) {
+    switchValue5.value = newValue;
+  } 
+
+  else if (parameterName === switchName6.value) {
+    switchValue6.value = newValue;
+  } 
+  
+  else if (parameterName === switchName7.value) {
+    switchValue7.value = newValue;
+  } 
+
+  else if (parameterName === countername.value) {
+    countername.value = newValue;
+  } 
+
+  console.log(`${parameterName} updated to: ${newValue}`);
+
 }
 
-// Function to update 3dm data
-function update3dmData(newData) {
-  encodedFile.value = newData;
-  isButtonDisabled.value = false;
-  compute.value = true;
-}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// Function to receive metadata
-function receiveMetadata(newValue) {
-  console.log("Received metadata:", newValue);
-  metadata.value = newValue;
-}
+// Watch effect to trigger runCounter when switchValue7 is true
+watch(switchValue7, (newVal) => {
+  if (newVal) {
+    console.log('Switch 07 is true, triggering compute process...');
+    runCompute(true);  // Trigger compute with newVal as true
+  }
+});
 
 // Function to run compute process
 function runCompute(newVal) {
@@ -174,120 +142,163 @@ function runCompute(newVal) {
   runCounter();  // Call runCounter within the compute process
 }
 
-// Computed ref for compute data
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function receiveMetadata(newValue) {
+  console.log(newValue)
+  metadata.value = newValue
+}
+
+
+// a computed ref. Vue will keep track of this and update it
 const computeData = computed(() => {
-  let file = encodedFile.value || "empty";
-  const dataObject = {
-    ["encodedFile"]: file,
-    [sliderName.value]: Number(sliderValue.value),
-    [sliderName2.value]: Number(sliderValue2.value),
-    [sliderName3.value]: Number(sliderValue3.value),
-    // [switchName.value]: Boolean(switchValue.value),
-    // [switchName2.value]: Boolean(switchValue2.value),
+  data = {
+    [firstSliderName.value]: Number(firstSliderValue.value),
+
+    [secondSliderName.value]: Number(secondSliderValue.value),
+
+    [thirdSliderName.value]: Number(thirdSliderValue.value),
+
+    [switchName.value]: Boolean(switchValue.value),
+
+    [switchName2.value]: Boolean(switchValue2.value),
+
     [switchName3.value]: Boolean(switchValue3.value),
-    [switchName9.value]: Boolean(switchValue9.value),
-    // Uncomment these if dropdowns are used
-    // [dropdownName.value]: Number(dropdownIndex.value),
-    // [dropdownName2.value]: Number(dropdownIndex2.value),
-    counterValue: counterValue.value, // Include counter value
+
+    [switchName4.value]: Boolean(switchValue4.value),
+
+    [switchName5.value]: Boolean(switchValue5.value),
+
+    [switchName6.value]: Boolean(switchValue6.value),
+
+    [switchName7.value]: Boolean(switchValue7.value),
+
+    [countername.value]: Number(counterValue.value),
   };
+
   console.log("Computed data:", dataObject); // Debugging
   return dataObject;
 });
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 // Watch reactive values for debugging
 watch(
-  [encodedFile, sliderValue, sliderValue2, sliderValue3, switchValue3, switchValue9, counterValue],
+  [firstSliderValue, secondSliderValue, thirdSliderValue, switchValue, switchValue2, switchValue3, switchValue4, switchValue5, switchValue6, switchValue7, counterValue],
   () => {
     console.log("Values updated:", {
-      encodedFile: encodedFile.value,
-      sliderValue: sliderValue.value,
-      sliderValue2: sliderValue2.value,
-      sliderValue3: sliderValue3.value,
-      // switchValue: switchValue.value,
-      // switchValue2: switchValue2.value,
-      switchValue3: switchValue3.value,
-      switchValue9: switchValue9.value,
-      counterValue: counterValue.value,
-      // Uncomment these if dropdowns are used
-      // dropdownIndex: dropdownIndex.value,
-      // dropdownIndex2: dropdownIndex2.value,
+      firstSliderName: firstSliderValue.value,
+
+      secondSliderName: secondSliderValue.value,
+
+      thirdSliderName: thirdSliderValue.value,
+
+      switchName: switchValue.value,
+
+      switchName2: switchValue2.value,
+
+      switchName3: switchValue3.value,
+
+      switchName4: switchValue4.value,
+
+      switchName5: switchValue5.value,
+
+      switchName6: switchValue6.value,
+
+      switchName7: switchValue7.value,
+
+      countername: counterValue.value,
+
     });
   },
   { deep: true }
 );
+
+onBeforeMount( () => {
+})
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 </script>
 
-
+<!-- Template is a HTML-based syntax that allows you to bind the rendered DOM elements
+with data, objects, functions etc. -->
 <template>
   <div id="appwindow">
     <div id="sidebar" class="container">
       <img class="mainlogo" alt="logo" src="./assets/logo.png" />
       <p id="intro">Generate housing project using graph theory and aggregation</p>
+      <ComputeButton 
+        title="Start" 
+        @click="() => runCompute(true)" 
+        :isDisabled="isButtonDisabled"/>  
       <p id="intro">Choose location, enter program requirements, and steps below.</p>
 
+
+
+      <!-- -------------------Part 02 ------------------------- -->
+
+      <SliderInput :title="firstSliderName" @update="updateValue"/> 
+
+      <SliderInput :title="secondSliderName" @update="updateValue"/> 
+
+      <SliderInput :title = "thirdSliderName" @update="updateValue"/> 
+
+
       <!-- Switch components with correct value and event binding -->
-      <!-- <Switch 
+
+      <Switch 
         :label="switchName" 
         :initialValue="switchValue" 
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
+
       <Switch 
         :label="switchName2" 
         :initialValue="switchValue2" 
         @update="(newVal, label) => updateValue(newVal, label)"  
-      /> -->
+      />
+
       <Switch 
         :label="switchName3" 
         :initialValue="switchValue3" 
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
-      <SliderInput 
-        :title="sliderName" 
-        :min="0.0" 
-        :max="1.0" 
-        :step="0.1" 
-        :val="sliderValue" 
-        @update="(newVal) => updateValue(newVal, sliderName.value)" 
-      />
-      <SliderInput 
-        :title="sliderName2" 
-        :min="0.0" 
-        :max="1.0" 
-        :step="0.1" 
-        :val="sliderValue2" 
-        @update="(newVal) => updateValue(newVal, sliderName2.value)" 
-      />
-      <SliderInput 
-        :title="sliderName3" 
-        :min="0.0" 
-        :max="1.0" 
-        :step="0.1" 
-        :val="sliderValue3" 
-        @update="(newVal) => updateValue(newVal, sliderName3.value)" 
-      />
 
-
+      <!-- -------------------Part 03 ------------------------- -->
 
       <Switch 
-        :label="switchName9" 
-        :initialValue="switchValue9" 
+        :label="switchName4" 
+        :initialValue="switchValue4" 
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
 
-      <!-- ComputeButton components, ensure they are uncommented -->
-      <ComputeButton 
-        title="Compute" 
-        @click="() => runCompute(true)" 
-        :isDisabled="isButtonDisabled" 
+      
+      <Switch 
+        :label="switchName5" 
+        :initialValue="switchValue5" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
       />
-      <ComputeButton 
-        title="Download 3dm" 
-        @click="download('CustomStick')" 
-      >Download 3dm</ComputeButton>
+
+      <Switch 
+        :label="switchName6" 
+        :initialValue="switchValue6" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
+      />
+      
+
+      <Switch 
+        :label="switchName7" 
+        :initialValue="switchValue7" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
+      />
+
     </div>
 
-    <div id="viewerwindow">
+    <div id="viewerwindow" v-if="metadata && metadata.length > 0">
       <div id="Construction" class="data1">
         <p id="para">1-bedroom apartments:</p>
         <div id="para2" v-if="metadata[0]">{{ metadata[0].value }}</div>
@@ -307,7 +318,7 @@ watch(
       </div>
 
       <div id="viewer" class="geometry">
-        <GeometryView2 
+        <GeometryView4 
           :data="computeData" 
           :path="path" 
           :runCompute="compute" 
@@ -351,8 +362,10 @@ watch(
 
 #sidebar {
   width: 310px;
-  height: 800px;
+  height: 800px; /* Fixed height for the sidebar */
   padding: 20px;
+  overflow-y: auto; /* Adds vertical scroll bar when content exceeds the height */
+  overflow-x: hidden; /* Prevents horizontal scroll bar */
 }
 
 #intro {
