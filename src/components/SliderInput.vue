@@ -1,93 +1,68 @@
 <script setup>
-import { ref } from "vue";
-// Define properties that you will be able to access from parent component. 
-// Those properties will be binded from parent to child. 
-// Available JavaScript types: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures
-const props = defineProps(['title', 'min', 'max', 'step', 'val'])
+import { ref, defineProps, defineEmits } from "vue";
 
-const title = ref(props.title)
+const props = defineProps(['title']);
+const titlec = ref(props.title);
+const emits = defineEmits(['update']);
 
-// Define events that will be accessible from parent component
-const emits = defineEmits(['update'])
+var sliderValue = ref(0.5);
 
-
-
-var sliderValue = ref(props.val)  
-
-function emitValueUpdate()
-{
-  emits("update", sliderValue.value, title.value)
+function sendValueUpdate() {
+  emits("update", sliderValue.value, titlec.value);
 }
-
-
-
 </script>
 
 <template>
-<div>
-	<form class="definition-input">
-			<label class="input-title" for="range-slider">{{ title }}: {{ sliderValue }}</label>
-
-			<input type="range" class="modern-range"
-			:min="min" 
-      :max="max" 
-      :step="step"
-      :val = "val"
-			v-model="sliderValue" 
-      @mouseup="emitValueUpdate"
-			/>
-      
-	</form>
-</div>
-
-
+  <div>
+    <form class="definition-input">
+      <div class="input-container">
+        <input
+          type="range"
+          class="modern-range"
+          min="0"
+          max="1"
+          step="0.1"
+          val="0.5"
+          v-model="sliderValue"
+          @mouseup="sendValueUpdate"
+        />
+        <label class="input-title">{{ title }}: {{ sliderValue }}</label>
+      </div>
+    </form>
+  </div>
 </template>
 
 <style scoped>
-label {
-    display: inline-block;
-    margin-bottom: 8px;
-    color: 'White';
-    font-family: Roboto Mono, monospace;
-    font-size: 14px;
-    font-weight: lighter;
+.input-container {
+  position: relative;
 }
+
+.input-title {
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Larabiefont, Arial, sans-serif;
+  font-size: x-small;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
 .modern-range {
   -webkit-appearance: none;
   width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  background: linear-gradient(to right, #000 0%, #8a8a8a 50%, #6d6d6d 50%, #8d8d8d 100%);
-  outline: none;
-  margin: 8px 0px;
-  background-image: -webkit-repeating-linear-gradient(left, #8a8a8a, #8a8a8a 1px, transparent 1px, transparent 4px);
+  background: linear-gradient(90deg, hsl(0, 0%, 100%), #535253);
+  height: 5px;
+  border-radius: 15px;
+  margin: 10px 0px;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .modern-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  /* background: #000; */
-  background: grey;
-  /* cursor: pointer; */
-  cursor: grab;
-}
-
-.modern-range::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #000;
-  cursor: pointer;
-}
-
-.modern-range::-ms-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #000;
+  height: 15px;
+  width: 15px;
+  border-radius: 15px;
+  background-color: rgb(80, 80, 80);
   cursor: pointer;
 }
 </style>

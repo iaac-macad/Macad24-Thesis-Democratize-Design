@@ -1,19 +1,16 @@
 <script setup>
-import { ref, onBeforeMount, computed, watch } from "vue";
-import { loadRhino } from "@/scripts/compute.js";
+import { ref, computed, watch } from "vue";
 
-// Import other Vue components in order to add them to a template.
-import Header from "commonComponents/Header.vue";
-import GeometryView2 from "./components/GeometryView4.vue";
+// Import other Vue components
+import GeometryView4 from "./components/GeometryView4.vue";
 import SliderInput from "./components/SliderInput.vue";
-import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
-import ComputeButton from "./components/ComputeButton.vue";
 import Switch from "./components/Switch02.vue";
-import Upload3dm from "./components/Upload3dm.vue";
-import { download } from "@/scripts/compute.js";
+import ComputeButton from "./components/ComputeButton.vue";
 
-// Import Grasshopper definition file
-// import def from './assets/osm_v16_3h.gh';
+// Import and define Store
+import { useComputeStore } from "@/stores/computeStore.js";
+const computeStore = useComputeStore();
+
 import def from './assets/osm_v17.gh';
 
 // Part 02 Inputs
@@ -43,14 +40,16 @@ const switchValue7 = ref(false);
 const countername = ref("4_Floor");
 const counterValue = ref(0); // New reactive reference to store counter output
 
+let path = def; // path to the Grasshopper definition
+let data = ref({});
+let metadata = ref([]);
+let compute = ref(false);
 
-const encodedFile = ref(null);
-const isButtonDisabled = ref(false);
-
-const path = def;
-const metadata = ref([]);
-const compute = ref(false);
-
+// Define isButtonDisabled as a computed property based on your requirements
+const isButtonDisabled = computed(() => {
+  // Example logic: disable button when metadata is empty
+  return metadata.value.length === 0;
+});
 
 function updateValue(newValue, parameterName) {
   if (parameterName === firstSliderName.value) {
@@ -79,36 +78,61 @@ function updateValue(newValue, parameterName) {
   console.log(`${parameterName} updated to: ${newValue}`);
 }
 
+// Function to run compute process
+function runCompute() {
+  console.log('Compute triggered, starting counter...');
+  compute.value = true;
+  runCounter();  // Call runCounter within the compute process
+}
 
-// Function to run the counter
-function runCounter() {
+async function runCounter() {
   console.log('Attempting to run counter...');
   console.log('Switch Value 7:', switchValue7.value);
   console.log('Metadata[3]:', metadata.value[3]);
 
-  // Ensure the switch is on and the metadata has a valid value
   if (switchValue7.value && metadata.value[3] && metadata.value[3].value > 0) {
     console.log('Counter conditions met. Starting counter...');
     let current = 0;
     const increment = 1;
-    const delay = 5000;  // 1 second delay
-    const targetValue = metadata.value[3].value; // Target value from metadata
+    const delay = 1000;  // 1 second delay
+    const targetValue = metadata.value[3].value;
 
-    // Start the interval to increment the counter
-    const intervalId = setInterval(() => {
+    const intervalId = setInterval(async () => {
       if (current <= targetValue) {
-        current += increment;  // Increment the counter
-        counterValue.value = current;  // Update the counter value
+        try {
+          const response = await fetch('http://localhost:8081/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              current: current,
+              increment: increment,
+              target: targetValue,
+              run: switchValue7.value,
+            }),
+          });
 
-        console.log('Current Value:', current);
+          if (!response.ok) {
+            throw new Error(`Server error: ${response.statusText}`);
+          }
 
-        // Check if the count has reached the target value
-        if (current >= targetValue) {
-          console.log('Counting complete.');
-          clearInterval(intervalId);  // Stop the interval
+          const result = await response.json();
+          current = result.next_value;
+          counterValue.value = current;
+
+          console.log('Current Value:', current);
+
+          if (current >= targetValue) {
+            console.log('Counting complete.');
+            clearInterval(intervalId);
+          }
+        } catch (error) {
+          console.error('Error with Hops computation:', error.toString());
+          clearInterval(intervalId);
         }
       } else {
-        clearInterval(intervalId);  // Stop the interval if condition fails
+        clearInterval(intervalId);
       }
     }, delay);
   } else {
@@ -116,26 +140,10 @@ function runCounter() {
   }
 }
 
-// Function to update 3dm data
-function update3dmData(newData) {
-  encodedFile.value = newData;
-  isButtonDisabled.value = false;
-  compute.value = true;
-}
-
-// Function to receive metadata
 function receiveMetadata(newValue) {
-  console.log("Received metadata:", newValue);
+  console.log(newValue);
   metadata.value = newValue;
 }
-
-// Function to run compute process
-function runCompute(newVal) {
-  console.log('Compute triggered, starting counter...');
-  compute.value = newVal;
-  runCounter();  // Call runCounter within the compute process
-}
-
 
 const computeData = computed(() => {
   const dataObject = {  // Ensure dataObject is defined
@@ -176,19 +184,16 @@ watch(
 );
 </script>
 
-
 <template>
   <div id="appwindow">
     <div id="sidebar" class="container">
       <img class="mainlogo" alt="logo" src="./assets/logo.png" />
       <p id="intro">Generate housing project using graph theory and aggregation</p>
-
       <ComputeButton 
-        title="Compute" 
-        @click="() => runCompute(true)" 
-        :isDisabled="isButtonDisabled" 
-      />
-      
+        title="Start" 
+        :isDisabled="isButtonDisabled"
+        @toggleCompute="runCompute" 
+      />  
       <p id="intro">Choose location, enter program requirements, and steps below.</p>
 
       <!-- -------------------Part 02 ------------------------- -->
@@ -245,15 +250,9 @@ watch(
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
 
-      <!-- ComputeButton components, ensure they are uncommented -->
-
-      <ComputeButton 
-        title="Download 3dm" 
-        @click="download('CustomStick')" 
-      >Download 3dm</ComputeButton>
     </div>
 
-    <div id="viewerwindow">
+    <div id="viewerwindow" v-if="metadata && metadata.length > 0">
       <div id="Construction" class="data1">
         <p id="para">1-bedroom apartments:</p>
         <div id="para2" v-if="metadata[0]">{{ metadata[0].value }}</div>
@@ -273,7 +272,7 @@ watch(
       </div>
 
       <div id="viewer" class="geometry">
-        <GeometryView2 
+        <GeometryView4 
           :data="computeData" 
           :path="path" 
           :runCompute="compute" 
@@ -317,8 +316,10 @@ watch(
 
 #sidebar {
   width: 310px;
-  height: 800px;
+  height: 800px; /* Fixed height for the sidebar */
   padding: 20px;
+  overflow-y: auto; /* Adds vertical scroll bar when content exceeds the height */
+  overflow-x: hidden; /* Prevents horizontal scroll bar */
 }
 
 #intro {
