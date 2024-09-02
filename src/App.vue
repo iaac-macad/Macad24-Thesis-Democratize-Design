@@ -6,6 +6,7 @@ import { loadRhino } from "@/scripts/compute.js";
 import Header from "commonComponents/Header.vue";
 import GeometryView2 from "./components/GeometryView4.vue";
 import SliderInput from "./components/SliderInput.vue";
+import SliderInput02 from "./components/SliderInput02.vue";
 import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
 // import ComputeButton from "./components/ComputeButton.vue";
 import Switch from "./components/Switch02.vue";
@@ -40,8 +41,10 @@ const switchValue6 = ref(false);
 const switchName7 = ref("3D_Record");
 const switchValue7 = ref(false);
 
-const countername = ref("4_Floor");
-const counterValue = ref(0); // New reactive reference to store counter output
+
+const FloorSliderName = ref("4_Floor");
+const FloorSliderValue = ref(0); 
+
 
 const encodedFile = ref(null);
 const isButtonDisabled = ref(false);
@@ -72,50 +75,12 @@ function updateValue(newValue, parameterName) {
     switchValue6.value = newValue;
   } else if (parameterName === switchName7.value) {
     switchValue7.value = newValue;
-    console.log('Compute triggered, starting counter...');
-    runCounter();  // Call runCounter within the compute process
-  } else if (parameterName === countername.value) {
-    countername.value = newValue;
+  } else if (parameterName === FloorSliderName.value) {
+    FloorSliderValue.value = newValue;
   }
   console.log(`${parameterName} updated to: ${newValue}`);
 }
 
-
-// Function to run the counter
-function runCounter() {
-  console.log('Attempting to run counter...');
-  console.log('Switch Value 7:', switchValue7.value);
-  console.log('Metadata[3]:', metadata.value[3]);
-
-  // Ensure the switch is on and the metadata has a valid value
-  if (switchValue7.value && metadata.value[3] && metadata.value[3].value > 0) {
-    console.log('Counter conditions met. Starting counter...');
-    let current = 0;
-    const increment = 1;
-    const delay = 5000;  // 1 second delay
-    const targetValue = metadata.value[3].value; // Target value from metadata
-
-    // Start the interval to increment the counter
-    const intervalId = setInterval(() => {
-      if (current <= targetValue) {
-        current += increment;  // Increment the counter
-        counterValue.value = current;  // Update the counter value
-
-        console.log('Current Value:', current);
-
-        // Check if the count has reached the target value
-        if (current >= targetValue) {
-          console.log('Counting complete.');
-          clearInterval(intervalId);  // Stop the interval
-        }
-      } else {
-        clearInterval(intervalId);  // Stop the interval if condition fails
-      }
-    }, delay);
-  } else {
-    console.log('Counter conditions not met. Check switch and metadata values.');
-  }
-}
 
 // Function to update 3dm data
 function update3dmData(newData) {
@@ -130,13 +95,6 @@ function receiveMetadata(newValue) {
   metadata.value = newValue;
 }
 
-// // Function to run compute process
-// function runCompute(newVal) {
-//   console.log('Compute triggered, starting counter...');
-//   compute.value = newVal;
-//   runCounter();  // Call runCounter within the compute process
-// }
-
 
 const computeData = computed(() => {
   const dataObject = {  // Ensure dataObject is defined
@@ -150,14 +108,14 @@ const computeData = computed(() => {
     [switchName5.value]: Boolean(switchValue5.value),
     [switchName6.value]: Boolean(switchValue6.value),
     [switchName7.value]: Boolean(switchValue7.value),
-    [countername.value]: Number(counterValue.value),
+    [FloorSliderName.value]: Number(FloorSliderValue.value),
   };
   console.log("Computed data:", dataObject);
   return dataObject;
 });
 
 watch(
-  [firstSliderValue, secondSliderValue, thirdSliderValue, switchValue, switchValue2, switchValue3, switchValue4, switchValue5, switchValue6, switchValue7, counterValue],
+  [firstSliderValue, secondSliderValue, thirdSliderValue, switchValue, switchValue2, switchValue3, switchValue4, switchValue5, switchValue6, switchValue7, FloorSliderValue],
   () => {
     console.log("Values updated:", {
       firstSliderName: firstSliderValue.value,
@@ -170,7 +128,7 @@ watch(
       switchName5: switchValue5.value,
       switchName6: switchValue6.value,
       switchName7: switchValue7.value,
-      countername: counterValue.value,
+      FloorSliderName: FloorSliderValue,value,
     });
   },
   { deep: true }
@@ -246,6 +204,15 @@ watch(
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
 
+      <SliderInput02 :title="FloorSliderName" @update="updateValue" />
+
+      <!-- <div v-if="metadata && metadata.length > 0">
+        <SliderInput02
+          :title="FloorSliderName"
+          :max="metadata.value[3] ? metadata.value[3].value : 0"  
+          @update="handleUpdate"
+        />
+      </div> -->
       <!-- ComputeButton components, ensure they are uncommented -->
 
       <!-- <ComputeButton 
@@ -268,9 +235,6 @@ watch(
         <p id="para">Test:</p>
         <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}</div>
 
-        <!-- Display Counter Output Here -->
-        <p id="para">Counter Output:</p>
-        <div id="para2">{{ counterValue }}</div> <!-- Counter output added here -->
       </div>
 
       <div id="viewer" class="geometry">
