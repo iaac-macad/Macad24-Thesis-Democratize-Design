@@ -13,7 +13,6 @@ import Upload3dm from "./components/Upload3dm.vue";
 import { download } from "@/scripts/compute.js";
 
 // Import Grasshopper definition file
-// import def from './assets/osm_v16_3h.gh';
 import def from './assets/osm_v17.gh';
 
 // Part 02 Inputs
@@ -43,12 +42,13 @@ const switchValue7 = ref(false);
 const countername = ref("4_Floor");
 const counterValue = ref(0); // New reactive reference to store counter output
 
+
 const encodedFile = ref(null);
 const isButtonDisabled = ref(false);
 
 const path = def;
 const metadata = ref([]);
-const compute = ref(false);
+const compute = ref(true);
 
 
 function updateValue(newValue, parameterName) {
@@ -130,12 +130,13 @@ function receiveMetadata(newValue) {
   metadata.value = newValue;
 }
 
-// // Function to run compute process
-// function runCompute(newVal) {
-//   console.log('Compute triggered, starting counter...');
-//   compute.value = newVal;
-//   runCounter();  // Call runCounter within the compute process
-// }
+// Function to run compute process
+function runCompute(newVal) {
+  console.log('Compute triggered, starting counter...');
+  console.log('New Value:', newVal);
+  compute.value = newVal;
+  runCounter();  // Call runCounter within the compute process
+}
 
 
 const computeData = computed(() => {
@@ -186,7 +187,7 @@ watch(
 
       <!-- <ComputeButton 
         title="Compute" 
-        @click="() => runCompute(true)" 
+        @click="() => runCompute(!compute)" 
         :isDisabled="isButtonDisabled" 
       /> -->
       
