@@ -303,11 +303,17 @@ onMounted(async() => {
   // compute();
 })
 
-// //onUpdated is called when an input prop is changed
-// // this runs compute whenever the input data changes
-// onUpdated(() => {
-//   compute();
-// })
+
+
+// vvv Uncomment this section to run compute as soon as any input changes vvv
+
+//onUpdated is called when an input prop is changed
+// this runs compute whenever the input data changes
+onUpdated(() => {
+  compute();
+})
+
+// ^^^ Uncomment this section to run compute as soon as any input changes ^^^
 
 
 
