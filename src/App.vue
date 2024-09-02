@@ -43,7 +43,6 @@ const switchValue7 = ref(false);
 const countername = ref("4_Floor");
 const counterValue = ref(0); // New reactive reference to store counter output
 
-
 const encodedFile = ref(null);
 const isButtonDisabled = ref(false);
 
