@@ -8,7 +8,7 @@ import GeometryView2 from "./components/GeometryView4.vue";
 import SliderInput from "./components/SliderInput.vue";
 import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
 import ComputeButton from "./components/ComputeButton.vue";
-import Switch from "./components/Switch02.vue";
+import Switch from "./components/Switch03.vue";
 import Upload3dm from "./components/Upload3dm.vue";
 import { download } from "@/scripts/compute.js";
 
@@ -247,10 +247,10 @@ watch(
 
       <!-- ComputeButton components, ensure they are uncommented -->
 
-      <ComputeButton 
+      <!-- <ComputeButton 
         title="Download 3dm" 
         @click="download('CustomStick')" 
-      >Download 3dm</ComputeButton>
+      >Download 3dm</ComputeButton> -->
     </div>
 
     <div id="viewerwindow">
