@@ -39,6 +39,7 @@ const switchValue4 = ref(false);
 const switchName5 = ref("3B_Cores");
 const switchValue5 = ref(false);
 
+
 const FloorSliderName = ref("4_Floor");
 const FloorSliderValue = ref(0); 
 
@@ -243,37 +244,27 @@ function calculateTotal(sliderKey) {
 
       <!-- -------------------Part 02 ------------------------- -->
 
+      <SliderInput :title="firstSliderName" @update="updateValue"/> 
+
+      <SliderInput :title="secondSliderName" @update="updateValue"/> 
+
+      <SliderInput :title = "thirdSliderName" @update="updateValue"/> 
+
       <!-- Switch components with correct value and event binding -->
 
+      <p id="para">2A_Init Init Aggr:</p>
       <Switch 
         :label="switchName" 
         :initialValue="switchValue" 
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
-
-      <p id="para"></p>
+      <p id="para">2B_Run Initial Aggr:</p>
       <Switch 
         :label="switchName2" 
         :initialValue="switchValue2" 
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
-
-      <p id="para"></p>
-      <SliderInput 
-        :title="firstSliderName" 
-        @update="updateValue"
-      /> 
-
-      <SliderInput 
-        :title="secondSliderName" 
-        @update="updateValue"
-      /> 
-
-      <SliderInput 
-        :title = "thirdSliderName" 
-        @update="updateValue"
-      /> 
-
+      <p id="para">2C_Run LB:</p>
       <Switch 
         :label="switchName3" 
         :initialValue="switchValue3" 
@@ -281,19 +272,19 @@ function calculateTotal(sliderKey) {
       />
 
       <!-- -------------------Part 03 ------------------------- -->
-      <p id="para"></p>
+      <p id="para">3A_Init Final Agg:</p>
       <Switch 
         :label="switchName4" 
         :initialValue="switchValue4" 
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
-
-      <p id="para"></p>
+      <p id="para">3B_Cores</p>
       <Switch 
         :label="switchName5" 
         :initialValue="switchValue5" 
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
+
 
       <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}
         <SliderInput02
@@ -327,7 +318,7 @@ function calculateTotal(sliderKey) {
         <p id="para">3-bedroom apartments:</p>
         <div id="para2" v-if="metadata[2]">{{ metadata[2].value }}</div>
 
-        <p id="para">Number of Floors:</p>
+        <p id="para">Test:</p>
         <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}</div>
 
       </div>
