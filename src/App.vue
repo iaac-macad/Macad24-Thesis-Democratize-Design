@@ -12,6 +12,7 @@ import DropdownSelector from "./components/DropdownSelector.vue";  // Restored D
 import Switch from "./components/Switch03.vue";
 import Upload3dm from "./components/Upload3dm.vue";
 import { download } from "@/scripts/compute.js";
+import CollapsiblePanel from "./components/CollapsiblePanel.vue";
 
 // Import Grasshopper definition file
 // import def from './assets/osm_v16_3h.gh';
@@ -253,73 +254,78 @@ function calculateTotal(sliderKey) {
 
       <!-- Switch components with correct value and event binding -->
 
-      <Switch 
-        :label="switchName" 
-        :initialValue="switchValue" 
-        @update="(newVal, label) => updateValue(newVal, label)"  
-      />
-
-      <p id="para"></p>
-      <Switch 
-        :label="switchName2" 
-        :initialValue="switchValue2" 
-        @update="(newVal, label) => updateValue(newVal, label)"  
-      />
-
-      <p id="para"></p>
-      <SliderInput 
-        :title="firstSliderName" 
-        @update="updateValue"
-      /> 
-
-      <SliderInput 
-        :title="secondSliderName" 
-        @update="updateValue"
-      /> 
-
-      <SliderInput 
-        :title = "thirdSliderName" 
-        @update="updateValue"
-      /> 
-
-      <Switch 
-        :label="switchName3" 
-        :initialValue="switchValue3" 
-        @update="(newVal, label) => updateValue(newVal, label)"  
-      />
-
-      <p id="para"></p>
-      <Switch 
-        :label="switchName6" 
-        :initialValue="switchValue6" 
-        @update="(newVal, label) => updateValue(newVal, label)"  
-      />
-
-      <!-- -------------------Part 03 ------------------------- -->
-      <p id="para"></p>
-      <Switch 
-        :label="switchName4" 
-        :initialValue="switchValue4" 
-        @update="(newVal, label) => updateValue(newVal, label)"  
-      />
-
-      <p id="para"></p>
-      <Switch 
-        :label="switchName5" 
-        :initialValue="switchValue5" 
-        @update="(newVal, label) => updateValue(newVal, label)"  
-      />
-
-      <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}
-        <SliderInput02
-          :value="FloorSliderValue"  
-          :label="FloorSliderName.value"
-          :max="metadata[3].value"
-          :title="FloorSliderName"
-          @update="updateValue" 
+      <CollapsiblePanel title="Create Massing Volume">
+        <Switch 
+          :label="switchName" 
+          :initialValue="switchValue" 
+          @update="(newVal, label) => updateValue(newVal, label)"  
         />
 
-      </div>
+        <p id="para"></p>
+        <Switch 
+          :label="switchName2" 
+          :initialValue="switchValue2" 
+          @update="(newVal, label) => updateValue(newVal, label)"  
+        />
+
+        <p id="para"></p>
+        <SliderInput 
+          :title="firstSliderName" 
+          @update="updateValue"
+        /> 
+
+        <SliderInput 
+          :title="secondSliderName" 
+          @update="updateValue"
+        /> 
+
+        <SliderInput 
+          :title = "thirdSliderName" 
+          @update="updateValue"
+        /> 
+
+        <Switch 
+          :label="switchName3" 
+          :initialValue="switchValue3" 
+          @update="(newVal, label) => updateValue(newVal, label)"  
+        />
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Visualize Massing Volume">
+        <p id="para"></p>
+        <Switch 
+          :label="switchName6" 
+          :initialValue="switchValue6" 
+          @update="(newVal, label) => updateValue(newVal, label)"  
+        />
+      </CollapsiblePanel>
+
+      <!-- -------------------Part 03 ------------------------- -->
+      <CollapsiblePanel title="Generate Floor Layouts">
+        <p id="para"></p>
+        <Switch 
+          :label="switchName4" 
+          :initialValue="switchValue4" 
+          @update="(newVal, label) => updateValue(newVal, label)"  
+        />
+
+        <p id="para"></p>
+        <Switch 
+          :label="switchName5" 
+          :initialValue="switchValue5" 
+          @update="(newVal, label) => updateValue(newVal, label)"  
+        />
+
+        <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}
+          <SliderInput02
+            :value="FloorSliderValue"  
+            :label="FloorSliderName.value"
+            :max="metadata[3].value"
+            :title="FloorSliderName"
+            @update="updateValue" 
+          />
+        </div>
+      </CollapsiblePanel>
 
 
       <!-- ComputeButton components, ensure they are uncommented -->
@@ -373,6 +379,7 @@ function calculateTotal(sliderKey) {
   border-color: white;
   border-radius: 25px;
   border-width: 2px;
+  overflow: auto; /* Ensure scrolling if content exceeds the viewport height */
 }
 
 .data1 {
@@ -389,10 +396,17 @@ function calculateTotal(sliderKey) {
   padding: 0px 20px;
 }
 
-#sidebar {
+/* #sidebar {
   width: 310px;
   height: 800px;
   padding: 20px;
+} */
+
+#sidebar {
+  width: 310px;
+  min-height: 800px; /* Change fixed height to min-height */
+  padding: 20px;
+  overflow: auto; /* Allow scrolling if content overflows */
 }
 
 #intro {
