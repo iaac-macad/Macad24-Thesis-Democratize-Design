@@ -39,6 +39,9 @@ const switchValue4 = ref(false);
 const switchName5 = ref("3B_Cores");
 const switchValue5 = ref(false);
 
+const switchName6 = ref("2D_Preview Massing");
+const switchValue6 = ref(false);
+
 const FloorSliderName = ref("4_Floor");
 const FloorSliderValue = ref(0); 
 
@@ -74,6 +77,8 @@ function updateValue(newValue, parameterName) {
     switchValue4.value = newValue;
   } else if (parameterName === switchName5.value) {
     switchValue5.value = newValue;
+  } else if (parameterName === switchName6.value) {
+    switchValue6.value = newValue;
   } else if (parameterName === FloorSliderName.value) {
     FloorSliderValue.value = newValue;  // Ensure FloorSliderValue is updated
 
@@ -134,6 +139,7 @@ const computeData = computed(() => {
     [switchName3.value]: Boolean(switchValue3.value),
     [switchName4.value]: Boolean(switchValue4.value),
     [switchName5.value]: Boolean(switchValue5.value),
+    [switchName6.value]: Boolean(switchValue6.value),
     [FloorSliderName.value]: Number(FloorSliderValue.value),
   };
   console.log("Computed data:", dataObject);
@@ -150,9 +156,10 @@ watch(
     switchValue3,
     switchValue4,
     switchValue5,
+    switchValue6,
     FloorSliderValue // Add FloorSliderValue to the watch list
   ],
-  ([first, second, third, switch1, switch2, switch3, switch4, switch5, floor]) => {
+  ([first, second, third, switch1, switch2, switch3, switch4, switch5, switch6, floor]) => {
     // Log values for other sliders and switches
     console.log("Values updated:", {
       firstSliderName: first,
@@ -163,6 +170,7 @@ watch(
       switchName3: switch3,
       switchName4: switch4,
       switchName5: switch5,
+      switchName6: switch6,
     });
 
     // Only watch the FloorSliderValue if metadata.value[3] exists
@@ -182,9 +190,9 @@ function fetchMetadata(position) {
   if (metadata.value.length >= 3) {
     return {
       position: position,
-      value1: metadata.value[0].value,  // Ensure to access the actual data within metadata
-      value2: metadata.value[1].value,  // Ensure to access the actual data within metadata
-      value3: metadata.value[2].value,  // Ensure to access the actual data within metadata
+      value1: parseFloat(metadata.value[0].value) || 0,  // Ensure the value is a number
+      value2: parseFloat(metadata.value[1].value) || 0,  // Ensure the value is a number
+      value3: parseFloat(metadata.value[2].value) || 0,  // Ensure the value is a number
     };
   } else {
     console.error('Not enough metadata available to fetch data.');
@@ -208,9 +216,9 @@ function calculateTotal(sliderKey) {
   if (sliderMetadataCache.value[sliderKey]) {
     // Iterate over each cached metadata entry for the slider
     Object.values(sliderMetadataCache.value[sliderKey]).forEach(metadata => {
-      totalValue1 += metadata.value1;
-      totalValue2 += metadata.value2;
-      totalValue3 += metadata.value3;
+      totalValue1 += parseFloat(metadata.value1) || 0;
+      totalValue2 += parseFloat(metadata.value2) || 0;
+      totalValue3 += parseFloat(metadata.value3) || 0;
     });
   } else {
     console.warn('No metadata found for slider key:', sliderKey);
@@ -280,6 +288,13 @@ function calculateTotal(sliderKey) {
         @update="(newVal, label) => updateValue(newVal, label)"  
       />
 
+      <p id="para"></p>
+      <Switch 
+        :label="switchName6" 
+        :initialValue="switchValue6" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
+      />
+
       <!-- -------------------Part 03 ------------------------- -->
       <p id="para"></p>
       <Switch 
@@ -303,7 +318,6 @@ function calculateTotal(sliderKey) {
           :title="FloorSliderName"
           @update="updateValue" 
         />
-
 
       </div>
 
