@@ -1,14 +1,22 @@
 <script setup>
-import { ref, defineProps, defineEmits } from "vue";
+import { ref, defineProps, defineEmits, watch } from "vue";
 
-const props = defineProps(['title', 'max']);  // Added 'max' prop
+const props = defineProps(['title', 'max']);
+const titlec = ref(props.title);
 const emits = defineEmits(['update']);
 
-const sliderValue = ref(1);  // Initialize slider value with ref
+var sliderValue = ref(1);
 
 function sendValueUpdate() {
-  emits("update", sliderValue.value, props.title);  // Use props.title directly
+  emits("update", sliderValue.value, titlec.value);
 }
+
+// Watch for prop changes to keep sliderValue in sync if necessary
+watch(() => props.value, (newVal) => {
+  sliderValue.value = newVal;
+});
+
+
 </script>
 
 <template>
@@ -19,10 +27,10 @@ function sendValueUpdate() {
           type="range"
           class="modern-range"
           min="0"
-          :max="props.max" 
+          :max="props.max"
           step="1"
           v-model="sliderValue"
-          @mouseup="sendValueUpdate"
+          @mouseup="sendValueUpdate"  
         />
         <label class="input-title">{{ props.title }}: {{ sliderValue }}</label> 
       </div>
