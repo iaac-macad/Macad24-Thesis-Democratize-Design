@@ -7,6 +7,9 @@ import Header from "commonComponents/Header.vue";
 import GeometryView2 from "./components/GeometryView5.vue";
 import SliderInput from "./components/SliderInput.vue";
 import SliderInput02 from "./components/SliderInput02.vue";
+import SliderInput03 from "./components/SliderInput03.vue";
+import SliderInput04 from "./components/SliderInput04.vue";
+import SliderInput05 from "./components/SliderInput05.vue";
 import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
 // import ComputeButton from "./components/ComputeButton.vue";
 import Switch from "./components/Switch03.vue";
@@ -255,41 +258,64 @@ function calculateTotal(sliderKey) {
       <!-- Switch components with correct value and event binding -->
 
       <CollapsiblePanel title="Create Massing Volume">
-        <Switch 
-          :label="switchName" 
-          :initialValue="switchValue" 
-          @update="(newVal, label) => updateValue(newVal, label)"  
-        />
+    <!-- Wrapper for each Switch with Tooltip -->
+    <div class="tooltip-container">
+      <Switch 
+        :label="switchName" 
+        :initialValue="switchValue" 
+        @update="(newVal, label) => updateValue(newVal, label)"
+      />
+      <span class="tooltip-text">Turn this on when you are ready to run the initial aggregation</span>
+    </div>
 
-        <p id="para"></p>
-        <Switch 
-          :label="switchName2" 
-          :initialValue="switchValue2" 
-          @update="(newVal, label) => updateValue(newVal, label)"  
-        />
+    <p id="para"></p>
 
-        <p id="para"></p>
-        <SliderInput 
-          :title="firstSliderName" 
-          @update="updateValue"
-        /> 
+    <div class="tooltip-container">
+      <Switch 
+        :label="switchName2" 
+        :initialValue="switchValue2" 
+        @update="(newVal, label) => updateValue(newVal, label)"
+      />
+      <span class="tooltip-text">Turn this on when you are ready to generate the mass</span>
+    </div>
 
-        <SliderInput 
-          :title="secondSliderName" 
-          @update="updateValue"
-        /> 
+    <p id="para"></p>
 
-        <SliderInput 
-          :title = "thirdSliderName" 
-          @update="updateValue"
-        /> 
+    <!-- Tooltip for Sliders (unchanged) -->
+    <div class="tooltip-container">
+      <SliderInput 
+        :title="firstSliderName" 
+        @update="updateValue"
+      />
+      <span class="tooltip-text">How important is the urban context?</span>
+    </div>
 
-        <Switch 
-          :label="switchName3" 
-          :initialValue="switchValue3" 
-          @update="(newVal, label) => updateValue(newVal, label)"  
-        />
-      </CollapsiblePanel>
+    <div class="tooltip-container">
+      <SliderInput03 
+        :title="secondSliderName" 
+        @update="updateValue"
+      />
+      <span class="tooltip-text">How important is negating solar radiation?</span>
+    </div>
+
+    <div class="tooltip-container">
+      <SliderInput04 
+        :title="thirdSliderName" 
+        @update="updateValue"
+      />
+      <span class="tooltip-text">How important is SV?</span>
+    </div>
+
+    <!-- Wrapper for the third Switch with Tooltip -->
+    <div class="tooltip-container">
+      <Switch 
+        :label="switchName3" 
+        :initialValue="switchValue3" 
+        @update="(newVal, label) => updateValue(newVal, label)"
+      />
+      <span class="tooltip-text">Switch True if you want to add Solar Analysis</span>
+    </div>
+  </CollapsiblePanel>
 
       <CollapsiblePanel title="Visualize Massing Volume">
         <p id="para"></p>
@@ -316,7 +342,7 @@ function calculateTotal(sliderKey) {
           @update="(newVal, label) => updateValue(newVal, label)"  
         />
 
-        <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}
+        <div id="para2" v-if="metadata[3]">{{ metadata[3].value && switchValue5.value > 0 }}
           <SliderInput02
             :value="FloorSliderValue"  
             :label="FloorSliderName.value"
@@ -477,5 +503,40 @@ function calculateTotal(sliderKey) {
   border-radius: 50%;
   background: grey;
   cursor: grab;
+}
+
+
+.tooltip-container {
+  position: relative; /* Positioning context for absolute tooltip */
+  display: block; /* Full width to ensure components don't shrink */
+  margin: 10px 0; /* Margin for spacing */
+  width: 100%; /* Ensure container takes full width */
+}
+
+.tooltip-text {
+  visibility: hidden; /* Initially hidden */
+  width: 200px; /* Width of the tooltip */
+  background-color: #333; /* Dark background */
+  color: #fff; /* White text */
+  text-align: center; /* Centered text */
+  padding: 5px 0; /* Padding for text */
+  border-radius: 6px; /* Rounded corners */
+  position: absolute; /* Absolute position */
+  z-index: 1; /* On top of other elements */
+  bottom: 125%; /* Position above the element */
+  left: 50%; /* Center align */
+  transform: translateX(-50%); /* Center align */
+  opacity: 0; /* Transparent initially */
+  transition: opacity 0.3s; /* Smooth transition */
+  font-family: 'Roboto Mono', monospace; /* Font for tooltip */
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible; /* Show on hover */
+  opacity: 1; /* Fully opaque */
+}
+
+.slider {
+  width: 100%; /* Ensure sliders take full width */
 }
 </style>

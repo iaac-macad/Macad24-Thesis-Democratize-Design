@@ -5,7 +5,7 @@ const props = defineProps(['title', 'max']);
 const titlec = ref(props.title);
 const emits = defineEmits(['update']);
 
-var sliderValue = ref(1);
+var sliderValue = ref(0);
 
 function sendValueUpdate() {
   emits("update", sliderValue.value, titlec.value);
