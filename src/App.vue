@@ -16,11 +16,45 @@ import Switch from "./components/Switch03.vue";
 import Upload3dm from "./components/Upload3dm.vue";
 import { download } from "@/scripts/compute.js";
 import CollapsiblePanel from "./components/CollapsiblePanel.vue";
+import TextInput from './components/TextInput.vue';
 
 // Import Grasshopper definition file
 // import def from './assets/osm_v16_3h.gh';
 import def from './assets/osm_v21.gh';
 
+// Part 01: Define reactive variables for text input names and values
+const textInputName1 = ref('Input 1');
+const textInputValue1 = ref('');
+
+const textInputName2 = ref('Input 2');
+const textInputValue2 = ref('');
+
+const textInputName3 = ref('Input 3');
+const textInputValue3 = ref('');
+
+const textInputName4 = ref('Input 4');
+const textInputValue4 = ref('');
+
+const textInputName5 = ref('Input 5');
+const textInputValue5 = ref('');
+
+// Method to handle updates from TextInput components
+function handleTextUpdate(value, label) {
+  if (!label) {
+    console.warn('Received an undefined label:', value);
+    return; // Exit early if the label is undefined
+  }
+  
+  console.log(`Updated Value from ${label}:`, value);
+
+  if (label === textInputName1.value) textInputValue1.value = value;
+  else if (label === textInputName2.value) textInputValue2.value = value;
+  else if (label === textInputName3.value) textInputValue3.value = value;
+  else if (label === textInputName4.value) textInputValue4.value = value;
+  else if (label === textInputName5.value) textInputValue5.value = value;
+}
+
+console.log('Text Input Names:', textInputName1.value, textInputName2.value, textInputName3.value, textInputName4.value, textInputName5.value);
 
 
 // Part 02 Inputs
@@ -145,11 +179,17 @@ const computeData = computed(() => {
     [switchName5.value]: Boolean(switchValue5.value),
     [switchName6.value]: Boolean(switchValue6.value),
     [FloorSliderName.value]: Number(FloorSliderValue.value),
+    [textInputName1.value]: textInputValue1.value,
+    [textInputName2.value]: textInputValue2.value,
+    [textInputName3.value]: textInputValue3.value,
+    [textInputName4.value]: textInputValue4.value,
+    [textInputName5.value]: textInputValue5.value,
   };
   console.log("Computed data:", dataObject);
   return dataObject;
 });
 
+// Watch for changes in all relevant variables
 watch(
   [
     firstSliderValue,
@@ -161,10 +201,30 @@ watch(
     switchValue4,
     switchValue5,
     switchValue6,
-    FloorSliderValue // Add FloorSliderValue to the watch list
+    FloorSliderValue,
+    textInputValue1,
+    textInputValue2,
+    textInputValue3,
+    textInputValue4,
+    textInputValue5
   ],
-  ([first, second, third, switch1, switch2, switch3, switch4, switch5, switch6, floor]) => {
-    // Log values for other sliders and switches
+  ([
+    first,
+    second,
+    third,
+    switch1,
+    switch2,
+    switch3,
+    switch4,
+    switch5,
+    switch6,
+    floor,
+    input1,
+    input2,
+    input3,
+    input4,
+    input5
+  ]) => {
     console.log("Values updated:", {
       firstSliderName: first,
       secondSliderName: second,
@@ -175,17 +235,20 @@ watch(
       switchName4: switch4,
       switchName5: switch5,
       switchName6: switch6,
+      textInputName1: input1,
+      textInputName2: input2,
+      textInputName3: input3,
+      textInputName4: input4,
+      textInputName5: input5,
     });
-
-    // Only watch the FloorSliderValue if metadata.value[3] exists
+    
     if (metadata.value[3]) {
       console.log("FloorSliderValue updated:", floor);
-      // Here you can add additional logic that should only run when metadata[3] exists
-      // For example, updating something related to the FloorSlider
     }
   },
   { deep: true }
 );
+
 
 
 // Simulated function to fetch metadata (replace with actual implementation)
@@ -252,7 +315,30 @@ function calculateTotal(sliderKey) {
       /> -->
       
       <p id="intro">Choose location, enter program requirements, and steps below.</p>
+      <CollapsiblePanel title="Location Selection">
 
+        <TextInput 
+          :label="textInputName1.value" 
+          @update="handleTextUpdate" 
+        />
+        <TextInput 
+          :label="textInputName2.value" 
+          @update="handleTextUpdate" 
+        />
+        <TextInput 
+          :label="textInputName3.value" 
+          @update="handleTextUpdate" 
+        />
+        <TextInput 
+          :label="textInputName4.value" 
+          @update="handleTextUpdate" 
+        />
+        <TextInput 
+          :label="textInputName5.value" 
+          @update="handleTextUpdate" 
+        />
+
+      </CollapsiblePanel>
       <!-- -------------------Part 02 ------------------------- -->
 
       <!-- Switch components with correct value and event binding -->
@@ -303,7 +389,7 @@ function calculateTotal(sliderKey) {
         :title="thirdSliderName" 
         @update="updateValue"
       />
-      <span class="tooltip-text">How important is SV?</span>
+      <span class="tooltip-text">How important is vertical height?</span>
     </div>
 
     <!-- Wrapper for the third Switch with Tooltip -->
@@ -317,42 +403,61 @@ function calculateTotal(sliderKey) {
     </div>
   </CollapsiblePanel>
 
-      <CollapsiblePanel title="Visualize Massing Volume">
-        <p id="para"></p>
-        <Switch 
-          :label="switchName6" 
-          :initialValue="switchValue6" 
-          @update="(newVal, label) => updateValue(newVal, label)"  
+   <!-- Part 02: Visualize Massing Volume -->
+   <CollapsiblePanel title="Visualize Massing Volume">
+    <p id="para"></p>
+
+    <!-- Wrapper for Switch with Tooltip -->
+    <div class="tooltip-container">
+      <Switch 
+        :label="switchName6" 
+        :initialValue="switchValue6" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
+      />
+      <span class="tooltip-text">Toggle to visualize the massing of the apartment block</span>
+    </div>
+  </CollapsiblePanel>
+
+  <!-- Part 03: Generate Floor Layouts -->
+  <CollapsiblePanel title="Generate Floor Layouts">
+    <p id="para"></p>
+
+    <!-- Wrapper for Switch with Tooltip -->
+    <div class="tooltip-container">
+      <Switch 
+        :label="switchName5" 
+        :initialValue="switchValue5" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
+      />
+      <span class="tooltip-text">Enable this to generate the Circulation cores and corridors</span>
+    </div>
+
+    <!-- Wrapper for Switch with Tooltip -->
+    <div class="tooltip-container">
+      <Switch 
+        :label="switchName4" 
+        :initialValue="switchValue4" 
+        @update="(newVal, label) => updateValue(newVal, label)"  
+      />
+      <span class="tooltip-text">Enable this to start the final aggregation</span>
+    </div>
+
+    <p id="para"></p>
+
+    <!-- Conditional SliderInput with Tooltip -->
+    <div id="para2" v-if="metadata[3] && switchValue4">
+      <div class="tooltip-container">
+        <SliderInput02
+          :value="FloorSliderValue"  
+          :label="FloorSliderName.value"
+          :max="metadata[3].value"
+          :title="FloorSliderName"
+          @update="updateValue" 
         />
-      </CollapsiblePanel>
-
-      <!-- -------------------Part 03 ------------------------- -->
-      <CollapsiblePanel title="Generate Floor Layouts">
-        <p id="para"></p>
-        <Switch 
-          :label="switchName4" 
-          :initialValue="switchValue4" 
-          @update="(newVal, label) => updateValue(newVal, label)"  
-        />
-
-        <p id="para"></p>
-        <Switch 
-          :label="switchName5" 
-          :initialValue="switchValue5" 
-          @update="(newVal, label) => updateValue(newVal, label)"  
-        />
-
-        <div id="para2" v-if="metadata[3]">{{ metadata[3].value && switchValue5.value > 0 }}
-          <SliderInput02
-            :value="FloorSliderValue"  
-            :label="FloorSliderName.value"
-            :max="metadata[3].value"
-            :title="FloorSliderName"
-            @update="updateValue" 
-          />
-        </div>
-      </CollapsiblePanel>
-
+        <span class="tooltip-text">Adjust the slider to generate the floors</span>
+      </div>
+    </div>
+  </CollapsiblePanel>
 
       <!-- ComputeButton components, ensure they are uncommented -->
 

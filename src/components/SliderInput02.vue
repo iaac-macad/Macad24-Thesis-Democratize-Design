@@ -52,19 +52,20 @@ watch(() => props.value, (newVal) => {
   margin: 0; /* Remove default margin */
 }
 
+
+
 .input-container {
   position: relative;
   width: 100%; /* Ensure the input container is full width */
 }
 
 .input-title {
-  position: absolute;
-  top: -30px; /* Adjust to position the label above the slider */
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
   font-family: 'Roboto Mono', monospace; /* Match font to your app */
-  font-size: 14px; /* Adjust size to fit with your design */
+  font-size: 14px;
   white-space: nowrap; /* Prevent text wrapping */
+  text-align: center; /* Center the label */
+  margin: 5px 0; /* Add vertical space above and below */
 }
 
 .modern-range {
@@ -74,7 +75,7 @@ watch(() => props.value, (newVal) => {
   height: 5px;
   border-radius: 15px;
   margin: 5px 0; /* Adjust margin to fit design */
-  font-family: 'Courier New', Courier, monospace; /* Match font to your app */
+  font-family: 'Roboto Mono', monospace; /* Match font to your app */
 }
 
 .modern-range::-webkit-slider-thumb {

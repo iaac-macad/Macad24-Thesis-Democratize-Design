@@ -36,10 +36,11 @@ function sendValueUpdate() {
 
 .input-title {
   display: block;
-  font-family: Larabiefont, Arial, sans-serif;
-  font-size: x-small;
+  font-family: 'Roboto Mono', monospace; /* Match font to your app */
+  font-size: 14px;
   white-space: nowrap; /* Prevent text wrapping */
   text-align: center; /* Center the label */
+  margin: 5px 0; /* Add vertical space above and below */
 }
 
 .modern-range {
@@ -48,7 +49,7 @@ function sendValueUpdate() {
   background: linear-gradient(90deg, #535253, hsl(0, 0%, 100%));
   height: 5px;
   border-radius: 15px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Roboto Mono', monospace; /* Match font to your app */
 }
 
 .modern-range::-webkit-slider-thumb {
