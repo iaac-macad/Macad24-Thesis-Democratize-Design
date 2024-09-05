@@ -23,23 +23,24 @@ import TextInput from './components/TextInput.vue';
 import def from './assets/osm_v21.gh';
 
 // Part 01: Define reactive variables for text input names and values
-const textInputName1 = ref('Input 1');
-const textInputValue1 = ref('');
+const textInputName1 = ref('Building_Number');
+const textInputValue1 = ref('400');
 
-const textInputName2 = ref('Input 2');
-const textInputValue2 = ref('');
+const textInputName2 = ref('Street_Name');
+const textInputValue2 = ref('CATALINA ST');
 
-const textInputName3 = ref('Input 3');
-const textInputValue3 = ref('');
+const textInputName3 = ref('City');
+const textInputValue3 = ref('LOS ANGELES');
 
-const textInputName4 = ref('Input 4');
-const textInputValue4 = ref('');
+const textInputName4 = ref('State');
+const textInputValue4 = ref('CA');
 
-const textInputName5 = ref('Input 5');
-const textInputValue5 = ref('');
+const textInputName5 = ref('ZIP_Code');
+const textInputValue5 = ref('90020-3758');
 
 // Method to handle updates from TextInput components
 function handleTextUpdate(value, label) {
+  console.log(`Updated: ${label} - ${value}`);
   if (!label) {
     console.warn('Received an undefined label:', value);
     return; // Exit early if the label is undefined
@@ -317,26 +318,11 @@ function calculateTotal(sliderKey) {
       <p id="intro">Choose location, enter program requirements, and steps below.</p>
       <CollapsiblePanel title="Location Selection">
 
-        <TextInput 
-          :label="textInputName1.value" 
-          @update="handleTextUpdate" 
-        />
-        <TextInput 
-          :label="textInputName2.value" 
-          @update="handleTextUpdate" 
-        />
-        <TextInput 
-          :label="textInputName3.value" 
-          @update="handleTextUpdate" 
-        />
-        <TextInput 
-          :label="textInputName4.value" 
-          @update="handleTextUpdate" 
-        />
-        <TextInput 
-          :label="textInputName5.value" 
-          @update="handleTextUpdate" 
-        />
+        <TextInput :label="textInputName1" @update="handleTextUpdate" />
+        <TextInput :label="textInputName2" @update="handleTextUpdate" />
+        <TextInput :label="textInputName3" @update="handleTextUpdate" />
+        <TextInput :label="textInputName4" @update="handleTextUpdate" />
+        <TextInput :label="textInputName5" @update="handleTextUpdate" />
 
       </CollapsiblePanel>
       <!-- -------------------Part 02 ------------------------- -->
