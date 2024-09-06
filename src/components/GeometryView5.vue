@@ -2,162 +2,98 @@
   <div id="viewport">
     <!-- To this element we will append our 3d scene. -->
     <div id="threejs-container"></div>
-
-</div>
+  </div>
 </template>
 
 <script setup>
-// Imports;
-import { onMounted, onUpdated, watch } from 'vue'
+// Imports
+import { onMounted, onUpdated, watch, ref } from 'vue'
 import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { Rhino3dmLoader } from "three/addons/loaders/3DMLoader.js"
 import { runCompute } from "@/scripts/compute.js"
 import { loadRhino } from "@/scripts/compute.js";
 
-
+// Initialize the Rhino loader
 const loader = new Rhino3dmLoader()
 loader.setLibraryPath('https://cdn.jsdelivr.net/npm/rhino3dm@8.0.0-beta2/')
 
-
 const props = defineProps(["data", "path", "runCompute"]);
-const emits = defineEmits(["updateMetadata"]);  
+const emits = defineEmits(["updateMetadata"]);
 
-
+// Watch for changes in runCompute prop
 watch(() => props.runCompute, (newValue) => {
   if (newValue) {
     compute();
   }
-})
+});
 
-
-// Three js objects
-let renderer, camera, scene,  controls, container, plane
+// Three.js objects
+let renderer, camera, scene, controls, container, plane;
 let cameraPosition, cameraTarget;
 
-// Add a flag to track the first run
+// Flag to track the first run
 let isFirstRun = true;
 
-function init() {
-  // https://threejs.org/docs/#api/en/renderers/WebGLRenderer
-  // This object will render our scene
-  // renderer = new THREE.WebGLRenderer()
-  renderer = new THREE.WebGLRenderer( { antialias: true } );
+// Function to handle custom logs and toggle spinner
+function handleCustomLog(message) {
+  console.log(message); // Call the original console.log
 
-  container = document.getElementById("threejs-container")
-
-  // Rendered needs to know what's the size of the scene. 
-  renderer.setSize(container.offsetWidth, container.offsetHeight)
-
-  // We are taking element defined in <template> and appending our render to it. 
-  container.appendChild(renderer.domElement)
-
-  //orient object
-  THREE.Object3D.DEFAULT_UP.set( 0, 0, 1 );
-
-  // https://threejs.org/docs/#api/en/cameras/PerspectiveCamera
-  camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000)
-  camera.position.set(15, -15, 10)
-
-  // https://threejs.org/docs/?q=scene#api/en/scenes/Scene
-  scene = new THREE.Scene()
-  scene.background = new THREE.Color("#add8e6");
-  // scene.background = new THREE.Color("#f5f6fa");
-  // scene.background = new THREE.Color( "hsl(147, 31%, 63%)" );
-
-
-  //from website*************
-  const ambient = new THREE.HemisphereLight( 0xffffff, 0xbfd4d2, 5 );
-	scene.add( ambient );
-
-	const directionalLight = new THREE.DirectionalLight( 0xffffff, 5 );
-  // const directionalLight = new THREE.DirectionalLight(0xeeeeee, 3);
-	directionalLight.position.set( 1, 4, 3 ).multiplyScalar( 3 );
-  directionalLight.castShadow = true;
-	directionalLight.shadow.mapSize.setScalar( 2048 );
-	directionalLight.shadow.bias = - 1e-4;
-  directionalLight.shadow.normalBias = 1e-4;
-  // directionalLight.shadow.bias = -0.001;
-  // directionalLight.shadow.normalBias = 0.01; // Tweak this value
-	scene.add( directionalLight );
-
-  // add some ambient light here
-  // const ambientlight = new THREE.AmbientLight(0xffffff, 1)
-  // ambientlight.position.set(0, 0, 0)
-  // scene.add(ambientlight)
-
-  // const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
-  // directionalLight.position.set(0, 1, 0)
-  // scene.add(directionalLight)
-
-	// renderer
-	// renderer.setPixelRatio( window.devicePixelRatio );
-	// renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.shadowMap.enabled = true;
-	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  // renderer.shadowMap.type = THREE.PCFShadowMap;
-	// document.body.appendChild( renderer.domElement );
-
-  // // add shadow plane
-  // plane = new THREE.Mesh(
-	//     new THREE.PlaneGeometry(),
-	//     new THREE.ShadowMaterial( {
-	//     color: 0x404040,  // Updated to dark grey
-	//     // transparent: true,
-  //     transparent: false,
-	//     // opacity: 0.075,
-  //     opacity: 1,
-	//     side: THREE.DoubleSide,
-	//   } ),
-	// );
-	// plane.position.z = - 0.1;
-	// // plane.rotation.x = - Math.PI / 2;
-	// plane.scale.setScalar( 5000 );
-	// plane.receiveShadow = true;
-	// scene.add( plane );
-
-
-  // Add shadow plane
-  plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(5000, 5000),  // Explicitly set dimensions
-    new THREE.MeshBasicMaterial({
-    color: 0xd3d3d3,  // Set to dark grey
-    side: THREE.DoubleSide,
-    })
-  );
-  // plane.rotation.x = -Math.PI / 2;  // Ensure the plane is horizontal
-  plane.position.z = -0.1;  // Slightly offset to ensure it's visible
-  plane.receiveShadow = true;  // Ensure it receives shadows
-  scene.add(plane);
-
-
-  //*************************** */
-
-  
-  // orbit controls
-  controls = new OrbitControls(camera, renderer.domElement);
-	controls.enableDamping = true;
-	controls.update();
-
-  // add some ambient light here
-  // const ambientlight = new THREE.AmbientLight(0xffffff, 1)
-  // ambientlight.position.set(0, 0, 0)
-  // scene.add(ambientlight)
-
-  // const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
-  // directionalLight.position.set(0, 1, 0)
-  // scene.add(directionalLight)
-
-
-  // add fun shape
-  animate()
+  if (message === "Running compute...") {
+    window.dispatchEvent(new Event("compute-start")); // Emit custom event for compute start
+  } else if (message === "Compute done.") {
+    window.dispatchEvent(new Event("compute-end")); // Emit custom event for compute end
+  }
 }
 
+function init() {
+  // Initialize Three.js scene, renderer, etc.
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  container = document.getElementById("threejs-container");
+  renderer.setSize(container.offsetWidth, container.offsetHeight);
+  container.appendChild(renderer.domElement);
+  THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
-// this function runs Compute
+  camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000);
+  camera.position.set(15, -15, 10);
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color("#add8e6");
+
+  const ambient = new THREE.HemisphereLight(0xffffff, 0xbfd4d2, 5);
+  scene.add(ambient);
+
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
+  directionalLight.position.set(1, 4, 3).multiplyScalar(3);
+  directionalLight.castShadow = true;
+  directionalLight.shadow.mapSize.setScalar(2048);
+  directionalLight.shadow.bias = -1e-4;
+  directionalLight.shadow.normalBias = 1e-4;
+  scene.add(directionalLight);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.update();
+
+  plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(5000, 5000),
+    new THREE.MeshBasicMaterial({
+      color: 0xd3d3d3,
+      side: THREE.DoubleSide,
+    })
+  );
+  plane.position.z = -0.1;
+  plane.receiveShadow = true;
+  scene.add(plane);
+
+  animate();
+}
+
+// Function to run computation
 async function compute() {
-  console.log("Runnning compute... \ndata sent: ", props.data)
-  const doc = await runCompute(props.data, props.path)
+  handleCustomLog("Running compute..."); // Show spinner
+  console.log("Running compute... \ndata sent: ", props.data);
+
+  const doc = await runCompute(props.data, props.path);
 
   if (doc.metadata) {
     emits("updateMetadata", doc.metadata);
@@ -167,56 +103,35 @@ async function compute() {
   cameraPosition = camera.position.clone();
   cameraTarget = controls.target.clone();
 
-
-  // // clear objects from scene
-  // scene.traverse((child) => {
-  //   if (!child.isLight) {
-  //     scene.remove(child)
-  //   }
-  //   console.log(child)
-  // })
-
-
-  //clear objects from scene except for lights and ground plane
+  // Clear objects from scene except for lights and ground plane
   scene.traverse((child) => {
     if (!child.isLight) {
-        // Check if the child is a mesh and its geometry is a PlaneGeometry
-        if (child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry) {
-            console.log('Child is a plane');
-        } else {
-            scene.remove(child);
-        }
+      if (child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry) {
+        console.log('Child is a plane');
+      } else {
+        scene.remove(child);
+      }
     }
-});
-
-
+  });
 
   const buffer = new Uint8Array(doc.toByteArray()).buffer;
   loader.parse(buffer, function (object) {
-    ///////////////////////////////////////////////////////////////////////
-    // add object graph from rhino model to three.js scene
     object.traverse((child) => {
-
-      // console.log(child)
-
       if (child.isLine) {
-          // Force the color to be light grey with transparency
-          const mat = new THREE.LineBasicMaterial({ 
-              color: new THREE.Color(0x000000), // white
-              transparent: true, // Enable transparency
-              opacity: 0.1, // Set the transparency level
-              linewidth: 1 // This value is mainly effective in certain renderers (like WebGL with certain settings)
-          });
-          child.material = mat;
+        const mat = new THREE.LineBasicMaterial({
+          color: new THREE.Color(0x000000),
+          transparent: true,
+          opacity: 0.1,
+          linewidth: 1
+        });
+        child.material = mat;
       }
-
       scene.add(plane);
       child.castShadow = true;
       child.receiveShadow = true;
+    });
 
-    })
-
-    scene.add(object)
+    scene.add(object);
 
     // Restore camera state
     camera.position.copy(cameraPosition);
@@ -232,19 +147,14 @@ async function compute() {
       }
       isFirstRun = false; // Set the flag to false after the first run
     }
-      
 
-    console.log("Compute done")
-    // scene.add(plane);
+    handleCustomLog("Compute done."); // Hide spinner
+    console.log("Compute done");
   });
 }
 
-
-
-// for controls update
+// For controls update
 function animate() {
-  // https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
-  // native Javascript function that tells your browser you are animating!
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
@@ -253,112 +163,69 @@ function animate() {
 // This will be run whenever the window is resized
 window.addEventListener("resize", onWindowResize);
 function onWindowResize() {
+  const height = container.offsetHeight;
+  const width = container.offsetWidth;
 
-  const height = container.offsetHeight
-  const width = container.offsetWidth
-
-  camera.aspect = width/ height
+  camera.aspect = width / height;
   camera.updateProjectionMatrix();
-
-
-  renderer.setSize(width, height)
-
+  renderer.setSize(width, height);
 }
 
-/**
- * Helper function that behaves like rhino's "zoom to selection", but for three.js!
- */
- function zoomCameraToSelection(camera, controls, selection, fitOffset = 1.1) {
+// Helper function for zooming the camera
+function zoomCameraToSelection(camera, controls, selection, fitOffset = 1.1) {
+  const box = new THREE.Box3();
+  for (const object of selection) {
+    if (object.isLight) continue;
+    box.expandByObject(object);
+  }
 
-const box = new THREE.Box3();
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const maxSize = Math.max(size.x, size.y, size.z);
+  const fitHeightDistance = maxSize / (2 * Math.atan(Math.PI * camera.fov / 360));
+  const fitWidthDistance = fitHeightDistance / camera.aspect;
+  const distance = fitOffset * Math.max(fitHeightDistance, fitWidthDistance);
 
-for (const object of selection) {
-  if (object.isLight) continue
-  box.expandByObject(object);
+  const direction = controls.target.clone()
+    .sub(camera.position)
+    .normalize()
+    .multiplyScalar(distance);
+  controls.maxDistance = distance * 10;
+  controls.target.copy(center);
+
+  camera.near = distance / 100;
+  camera.far = distance * 100;
+  camera.updateProjectionMatrix();
+  camera.position.copy(controls.target).sub(direction);
+  controls.update();
 }
-
-const size = box.getSize(new THREE.Vector3());
-const center = box.getCenter(new THREE.Vector3());
-
-const maxSize = Math.max(size.x, size.y, size.z);
-const fitHeightDistance = maxSize / (2 * Math.atan(Math.PI * camera.fov / 360));
-const fitWidthDistance = fitHeightDistance / camera.aspect;
-const distance = fitOffset * Math.max(fitHeightDistance, fitWidthDistance);
-
-const direction = controls.target.clone()
-  .sub(camera.position)
-  .normalize()
-  .multiplyScalar(distance);
-controls.maxDistance = distance * 10;
-controls.target.copy(center);
-
-camera.near = distance / 100;
-camera.far = distance * 100;
-camera.updateProjectionMatrix();
-camera.position.copy(controls.target).sub(direction);
-
-controls.update();
-
-}
-
-
 
 // This will be run whenever this component is instantiated
-onMounted(async() => {
-  init()
-  await loadRhino()
-  // compute();
-})
+onMounted(async () => {
+  init();
+  await loadRhino();
+});
 
-
-
-// vvv Uncomment this section to run compute as soon as any input changes vvv
-
-//onUpdated is called when an input prop is changed
-// this runs compute whenever the input data changes
+// Run compute as soon as any input changes
 onUpdated(() => {
   compute();
-})
-
-// ^^^ Uncomment this section to run compute as soon as any input changes ^^^
-
-
-
+});
 </script>
 
 <style scoped>
-
-
-/* #viewport {
-
-  height: 100%;
-  width: 100%;
-  min-width: 200px;
-  position:inherit;
-}
-
-#threejs-container {
-  height: 100%;
-  width: 100%;
-  min-width: 200px;
-  position:inherit;
-} */
-
-
-
 #viewport {
   height: 100vh;
   width: 100vw;
   min-width: 200px;
   min-height: 200px;
-  position:inherit;
+  position: inherit;
 }
+
 #threejs-container {
   height: 100vh;
   width: 100vw;
   min-width: 200px;
   min-height: 200px;
-  position:inherit;
+  position: inherit;
 }
-
 </style>

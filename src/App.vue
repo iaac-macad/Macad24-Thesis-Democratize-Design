@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount, computed, watch } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { loadRhino } from "@/scripts/compute.js";
 
 // Import other Vue components in order to add them to a template.
@@ -17,6 +17,8 @@ import Upload3dm from "./components/Upload3dm.vue";
 import { download } from "@/scripts/compute.js";
 import CollapsiblePanel from "./components/CollapsiblePanel.vue";
 import TextInput from './components/TextInput.vue';
+
+import LoadingSpinner from "./components/LoadingSpinner.vue"; // Import the spinner
 
 // Import Grasshopper definition file
 // import def from './assets/osm_v16_3h.gh';
@@ -326,6 +328,44 @@ function calculateTotal(sliderKey) {
   // You can add additional logic here if needed, such as updating UI elements
 }
 
+// Reactive variable to control spinner visibility
+const isComputing = ref(false);
+
+// Function to handle custom logs and toggle spinner
+function handleCustomLog(message) {
+  console.log(message); // Call the original console.log
+
+  if (message === "Running compute...") {
+    isComputing.value = true; // Show spinner
+  } else if (message === "Compute done.") {
+    isComputing.value = false; // Hide spinner
+  }
+}
+
+// Event listeners to toggle spinner visibility
+function handleComputeStart() {
+  isComputing.value = true; // Show spinner
+}
+
+function handleComputeEnd() {
+  isComputing.value = false; // Hide spinner
+}
+
+// Setup event listeners in Vue lifecycle hooks
+onMounted(() => {
+  window.addEventListener("compute-start", handleComputeStart);
+  window.addEventListener("compute-end", handleComputeEnd);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("compute-start", handleComputeStart);
+  window.removeEventListener("compute-end", handleComputeEnd);
+});
+
+// Example usage for demonstration
+handleCustomLog("Running compute..."); // This would be in your actual compute start logic
+setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates compute end after 3 seconds
+
 </script>
 
 
@@ -504,8 +544,14 @@ function calculateTotal(sliderKey) {
       >Download 3dm</ComputeButton> -->
     </div>
 
+
+
     <div id="viewerwindow">
-      <div id="Construction" class="data1">
+
+
+
+      <div id="viewer" class="geometry">
+        <div id="Construction" class="data1">
         <p id="para">1-bedroom apartments:</p>
         <div id="para2" v-if="metadata[0]">{{ metadata[0].value }}</div>
 
@@ -519,8 +565,8 @@ function calculateTotal(sliderKey) {
         <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}</div>
 
       </div>
-
-      <div id="viewer" class="geometry">
+        <!-- Loading Spinner positioned in front of all content -->
+        <LoadingSpinner :isVisible="isComputing" />
         <GeometryView2 
           :data="computeData" 
           :path="path" 
@@ -564,17 +610,13 @@ function calculateTotal(sliderKey) {
   padding: 0px 20px;
 }
 
-/* #sidebar {
-  width: 310px;
-  height: 800px;
-  padding: 20px;
-} */
-
 #sidebar {
   width: 310px;
   min-height: 800px; /* Change fixed height to min-height */
   padding: 20px;
   overflow: auto; /* Allow scrolling if content overflows */
+  position: relative; /* Ensure stacking context */
+  z-index: 10; /* Higher z-index for sidebar */
 }
 
 #intro {
@@ -598,28 +640,11 @@ function calculateTotal(sliderKey) {
   margin-bottom: 25px;
 }
 
-#viewerwindow {
-  display: flex;
-  flex-direction: column;
-  width: calc(100% - 580px);
-  height: 100vh;
-  gap: 10px;
-  padding: 0px 20px;
-  border-color: white;
-  background-color: white;
-}
-
-#viewer {
-  width: 100%;
-  height: 100vh;
-  align-items: center;
-  border-radius: 25px;
-}
-
 #Construction {
-  position: absolute;
+  position: relative; /* Changed to relative for proper positioning */
   text-align: left;
   margin: 0px 0px;
+  z-index: 15; /* Higher than viewer but below spinner */
 }
 
 .mainlogo {
@@ -647,7 +672,6 @@ function calculateTotal(sliderKey) {
   background: grey;
   cursor: grab;
 }
-
 
 .tooltip-container {
   position: relative; /* Positioning context for absolute tooltip */
@@ -682,4 +706,44 @@ function calculateTotal(sliderKey) {
 .slider {
   width: 100%; /* Ensure sliders take full width */
 }
+
+/* Spinner overlay styles to cover the entire geometry viewer */
+.spinner-overlay {
+  position: absolute; /* Position absolute to cover only the parent */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* Match parent's full height */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100; /* High z-index to ensure it's on top of the geometry viewer content */
+  pointer-events: none; /* Allow interactions with underlying content */
+}
+
+#viewer {
+  width: 100%;
+  height: 100vh;
+  align-items: center;
+
+  position: relative; /* Ensure #viewer is relative for absolute positioning of spinner */
+  z-index: 50; /* Lower z-index than spinner to stay behind it */
+  overflow: hidden; /* Ensure spinner stays within boundaries */
+}
+
+#viewerwindow {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 580px);
+  height: 100vh;
+  gap: 10px;
+  padding: 0px 20px;
+  border-color: white;
+  background-color: white;
+  position: relative; /* Add relative position for stacking context */
+  z-index: 40; /* Lower z-index to ensure it's behind the spinner */
+}
+
+
 </style>
