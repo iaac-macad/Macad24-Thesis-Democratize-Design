@@ -58,15 +58,6 @@ function handleTextUpdate(value, label) {
 console.log('Text Input Names:', textInputName1.value, textInputName2.value, textInputName3.value, textInputName4.value, textInputName5.value);
 
 
-// const firstSliderName = ref("2D_UrbanField"); // must match the Input name in your GH definition!
-// const firstSliderValue = ref(0.7); // default slider value
-// const secondSliderName = ref("2E_RadField"); // must match the Input name in your GH definition!
-// const secondSliderValue = ref(0.5); // default slider value
-// const thirdSliderName = ref("2F_SVField"); // must match the Input name in your GH definition!
-// const thirdSliderValue = ref(0.0); // default slider value
-
-
-
 // Part 02 Inputs
 const firstSliderName = ref("2D_UrbanField"); // must match the Input name in your GH definition!
 const firstSliderValue = ref(0.7); // default slider value
@@ -86,12 +77,18 @@ const switchName6 = ref("2D_Preview Massing");
 const switchValue6 = ref(false);
 
 // Part 03 Inputs
+const forthSliderName = ref("1_bedroom");
+const forthSliderValue = ref(100); 
+const fifthSliderName = ref("2_bedroom"); 
+const fifthSliderValue = ref(60); 
+const sixthSliderName = ref("3_bedroom");
+const sixthSliderValue = ref(25); 
+
 const switchName4 = ref("3A_Init Final Agg");
 const switchValue4 = ref(false);
 const switchName5 = ref("3B_Cores");
 const switchValue5 = ref(false);
 
-// Part 04 Inputs
 const FloorSliderName = ref("4_Floor");
 const FloorSliderValue = ref(0); 
 
@@ -117,6 +114,12 @@ function updateValue(newValue, parameterName) {
     secondSliderValue.value = newValue;
   } else if (parameterName === thirdSliderName.value) {
     thirdSliderValue.value = newValue;
+  } else if (parameterName === forthSliderName.value) {
+    forthSliderValue.value = newValue;
+  } else if (parameterName === fifthSliderName.value) {
+    fifthSliderValue.value = newValue;
+  } else if (parameterName === sixthSliderName.value) {
+    sixthSliderValue.value = newValue;
   } else if (parameterName === switchName.value) {
     switchValue.value = newValue;
   } else if (parameterName === switchName2.value) {
@@ -184,6 +187,9 @@ const computeData = computed(() => {
     [firstSliderName.value]: Number(firstSliderValue.value),
     [secondSliderName.value]: Number(secondSliderValue.value),
     [thirdSliderName.value]: Number(thirdSliderValue.value),
+    [forthSliderName.value]: Number(forthSliderValue.value),
+    [fifthSliderName.value]: Number(fifthSliderValue.value),
+    [sixthSliderName.value]: Number(sixthSliderValue.value),
     [switchName.value]: Boolean(switchValue.value),
     [switchName2.value]: Boolean(switchValue2.value),
     [switchName3.value]: Boolean(switchValue3.value),
@@ -207,6 +213,9 @@ watch(
     firstSliderValue,
     secondSliderValue,
     thirdSliderValue,
+    forthSliderValue,
+    fifthSliderValue,
+    sixthSliderValue,
     switchValue,
     switchValue2,
     switchValue3,
@@ -224,6 +233,9 @@ watch(
     first,
     second,
     third,
+    forth,
+    fifth,
+    sixth,
     switch1,
     switch2,
     switch3,
@@ -241,6 +253,9 @@ watch(
       firstSliderName: first,
       secondSliderName: second,
       thirdSliderName: third,
+      forthSliderName: forth,
+      fifthSliderName: fifth,
+      sixthSliderName: sixth,
       switchName: switch1,
       switchName2: switch2,
       switchName3: switch3,
@@ -418,6 +433,30 @@ function calculateTotal(sliderKey) {
   <!-- Part 03: Generate Floor Layouts -->
   <CollapsiblePanel title="Generate Floor Layouts">
     <p id="para"></p>
+
+    <div class="tooltip-container">
+      <SliderInput05 
+        :title="forthSliderName" 
+        @update="updateValue"
+      />
+      <span class="tooltip-text">How important is having more 1-bedroom apartments?</span>
+    </div>
+
+    <div class="tooltip-container">
+      <SliderInput05 
+        :title="fifthSliderName" 
+        @update="updateValue"
+      />
+      <span class="tooltip-text">How important is having more 2-bedroom apartments?</span>
+    </div>
+
+    <div class="tooltip-container">
+      <SliderInput05 
+        :title="sixthSliderName" 
+        @update="updateValue"
+      />
+      <span class="tooltip-text">How important is having more 3-bedroom apartments?</span>
+    </div>
 
     <!-- Wrapper for Switch with Tooltip -->
     <div class="tooltip-container">
