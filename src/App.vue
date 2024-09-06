@@ -333,7 +333,7 @@ function calculateTotal(sliderKey) {
   <div id="appwindow">
     <div id="sidebar" class="container">
       <img class="mainlogo" alt="logo" src="./assets/logo.png" />
-      <p id="intro">This feasability tool enables you to generate modular low-income housing designs utilizing graph theory and sequential combinatorial modeling. 
+      <p id="intro">This feasability tool enables you to generate modular low-income housing designs utilizing graphs and combinatorial modeling. 
         Architectural expertise, environmental simulation, and typical space requirements are embedded in the algorithm.</p>
 
       <!-- <ComputeButton 
@@ -342,7 +342,7 @@ function calculateTotal(sliderKey) {
         :isDisabled="isButtonDisabled" 
       /> -->
       
-      <p id="intro">Follow the steps in each dropdown panel below.</p>
+      <p id="intro">Follow the steps below.</p>
       <CollapsiblePanel title="Select Location">
 
         <TextInput :label="textInputName1" @update="handleTextUpdate" />
@@ -440,7 +440,7 @@ function calculateTotal(sliderKey) {
         :title="forthSliderName" 
         @update="updateValue"
       />
-      <span class="tooltip-text">How important is having more 1-bedroom apartments?</span>
+      <span class="tooltip-text">How important is having 1-bedroom apartments?</span>
     </div>
 
     <div class="tooltip-container">
@@ -448,7 +448,7 @@ function calculateTotal(sliderKey) {
         :title="fifthSliderName" 
         @update="updateValue"
       />
-      <span class="tooltip-text">How important is having more 2-bedroom apartments?</span>
+      <span class="tooltip-text">How important is having 2-bedroom apartments?</span>
     </div>
 
     <div class="tooltip-container">
@@ -456,7 +456,7 @@ function calculateTotal(sliderKey) {
         :title="sixthSliderName" 
         @update="updateValue"
       />
-      <span class="tooltip-text">How important is having more 3-bedroom apartments?</span>
+      <span class="tooltip-text">How important is having 3-bedroom apartments?</span>
     </div>
 
     <!-- Wrapper for Switch with Tooltip -->
