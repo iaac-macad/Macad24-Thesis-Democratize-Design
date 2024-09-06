@@ -37,7 +37,7 @@ function sendValueUpdate() {
 .input-title {
   display: block;
   font-family: 'Roboto Mono', monospace; /* Match font to your app */
-  font-size: 14px;
+  font-size: 12px;
   white-space: nowrap; /* Prevent text wrapping */
   text-align: center; /* Center the label */
   margin: 5px 0; /* Add vertical space above and below */

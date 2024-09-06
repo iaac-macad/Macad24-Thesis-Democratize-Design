@@ -36,10 +36,11 @@ function sendValueUpdate() {
 
 .input-title {
   display: block;
-  font-family: Larabiefont, Arial, sans-serif;
-  font-size: x-small;
+  font-family: 'Roboto Mono', monospace; /* Match font to your app */
+  font-size: 12px;
   white-space: nowrap; /* Prevent text wrapping */
   text-align: center; /* Center the label */
+  margin: 5px 0; /* Add vertical space above and below */
 }
 
 .modern-range {

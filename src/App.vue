@@ -333,7 +333,8 @@ function calculateTotal(sliderKey) {
   <div id="appwindow">
     <div id="sidebar" class="container">
       <img class="mainlogo" alt="logo" src="./assets/logo.png" />
-      <p id="intro">Generate housing project using graph theory and aggregation</p>
+      <p id="intro">This feasability tool enables you to generate modular low-income housing designs utilizing graph theory and sequential combinatorial modeling. 
+        Architectural expertise, environmental simulation, and typical space requirements are embedded in the algorithm.</p>
 
       <!-- <ComputeButton 
         title="Compute" 
@@ -341,8 +342,8 @@ function calculateTotal(sliderKey) {
         :isDisabled="isButtonDisabled" 
       /> -->
       
-      <p id="intro">Choose location, enter program requirements, and steps below.</p>
-      <CollapsiblePanel title="Location Selection">
+      <p id="intro">Follow the steps in each dropdown panel below.</p>
+      <CollapsiblePanel title="Select Location">
 
         <TextInput :label="textInputName1" @update="handleTextUpdate" />
         <TextInput :label="textInputName2" @update="handleTextUpdate" />
@@ -411,7 +412,7 @@ function calculateTotal(sliderKey) {
         :initialValue="switchValue3" 
         @update="(newVal, label) => updateValue(newVal, label)"
       />
-      <span class="tooltip-text">Switch True if you want to add Solar Analysis</span>
+      <span class="tooltip-text">Switch true if you want to consider solar analysis and sky view in the massing</span>
     </div>
   </CollapsiblePanel>
 
@@ -579,6 +580,7 @@ function calculateTotal(sliderKey) {
 #intro {
   font-family: Roboto Mono, monospace;
   font-size: 14px;
+  text-align: justify;
 }
 
 #para {
