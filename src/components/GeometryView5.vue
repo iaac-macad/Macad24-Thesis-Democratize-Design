@@ -213,7 +213,7 @@ onUpdated(() => {
 </script>
 
 <style scoped>
-#viewport {
+/* #viewport {
   height: 100vh;
   width: 100vw;
   min-width: 200px;
@@ -227,5 +227,15 @@ onUpdated(() => {
   min-width: 200px;
   min-height: 200px;
   position: inherit;
+} */
+
+#viewport, #threejs-container {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
+
+
 </style>

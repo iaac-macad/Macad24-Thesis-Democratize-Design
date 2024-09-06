@@ -362,9 +362,9 @@ onUnmounted(() => {
   window.removeEventListener("compute-end", handleComputeEnd);
 });
 
-// Example usage for demonstration
-handleCustomLog("Running compute..."); // This would be in your actual compute start logic
-setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates compute end after 3 seconds
+// // Example usage for demonstration
+// handleCustomLog("Running compute..."); // This would be in your actual compute start logic
+// setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates compute end after 3 seconds
 
 </script>
 
@@ -548,8 +548,6 @@ setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates comp
 
     <div id="viewerwindow">
 
-
-
       <div id="viewer" class="geometry">
         <div id="Construction" class="data1">
         <p id="para">1-bedroom apartments:</p>
@@ -585,6 +583,8 @@ setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates comp
   height: 100vh;
   padding: 20px;
   background-color: white;
+  box-sizing: border-box; /* Ensures padding is included in the width/height */
+  overflow: hidden; /* Prevents scrollbars */
 }
 
 .container {
@@ -593,7 +593,9 @@ setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates comp
   border-color: white;
   border-radius: 25px;
   border-width: 2px;
-  overflow: auto; /* Ensure scrolling if content exceeds the viewport height */
+  /* overflow: auto; Ensure scrolling if content exceeds the viewport height */
+  flex-grow: 1; /* Ensures container fills remaining space */
+  overflow: hidden; /* Hide scrollbars */
 }
 
 .data1 {
@@ -726,7 +728,6 @@ setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates comp
   width: 100%;
   height: 100vh;
   align-items: center;
-
   position: relative; /* Ensure #viewer is relative for absolute positioning of spinner */
   z-index: 50; /* Lower z-index than spinner to stay behind it */
   overflow: hidden; /* Ensure spinner stays within boundaries */
@@ -735,14 +736,17 @@ setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates comp
 #viewerwindow {
   display: flex;
   flex-direction: column;
-  width: calc(100% - 580px);
-  height: 100vh;
+  width: calc(100% - 450px);
+  /* height: 100vh; */
+  height: 100%;
   gap: 10px;
   padding: 0px 20px;
   border-color: white;
   background-color: white;
   position: relative; /* Add relative position for stacking context */
   z-index: 40; /* Lower z-index to ensure it's behind the spinner */
+  box-sizing: border-box; /* Ensure padding is included in width/height */
+  overflow: hidden; /* Ensure no scrollbars */
 }
 
 
