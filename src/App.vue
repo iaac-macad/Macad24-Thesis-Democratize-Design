@@ -78,11 +78,11 @@ const switchValue6 = ref(false);
 
 // Part 03 Inputs
 const forthSliderName = ref("1_bedroom");
-const forthSliderValue = ref(100); 
+const forthSliderValue = ref(50); 
 const fifthSliderName = ref("2_bedroom"); 
-const fifthSliderValue = ref(60); 
+const fifthSliderValue = ref(50); 
 const sixthSliderName = ref("3_bedroom");
-const sixthSliderValue = ref(25); 
+const sixthSliderValue = ref(50); 
 
 const switchName4 = ref("3A_Init Final Agg");
 const switchValue4 = ref(false);
@@ -552,7 +552,7 @@ function calculateTotal(sliderKey) {
 
 .data1 {
   background-color: rgba(0, 0, 0, 0.432);
-  width: 30%;
+  width: 22%;
   font-family: Roboto Mono, monospace;
   font-size: 16px;
   color: white;
