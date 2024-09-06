@@ -58,6 +58,15 @@ function handleTextUpdate(value, label) {
 console.log('Text Input Names:', textInputName1.value, textInputName2.value, textInputName3.value, textInputName4.value, textInputName5.value);
 
 
+// const firstSliderName = ref("2D_UrbanField"); // must match the Input name in your GH definition!
+// const firstSliderValue = ref(0.7); // default slider value
+// const secondSliderName = ref("2E_RadField"); // must match the Input name in your GH definition!
+// const secondSliderValue = ref(0.5); // default slider value
+// const thirdSliderName = ref("2F_SVField"); // must match the Input name in your GH definition!
+// const thirdSliderValue = ref(0.0); // default slider value
+
+
+
 // Part 02 Inputs
 const firstSliderName = ref("2D_UrbanField"); // must match the Input name in your GH definition!
 const firstSliderValue = ref(0.7); // default slider value
@@ -73,14 +82,16 @@ const switchValue2 = ref(false);
 const switchName3 = ref("2C_Run LB");
 const switchValue3 = ref(false);
 
+const switchName6 = ref("2D_Preview Massing");
+const switchValue6 = ref(false);
+
+// Part 03 Inputs
 const switchName4 = ref("3A_Init Final Agg");
 const switchValue4 = ref(false);
 const switchName5 = ref("3B_Cores");
 const switchValue5 = ref(false);
 
-const switchName6 = ref("2D_Preview Massing");
-const switchValue6 = ref(false);
-
+// Part 04 Inputs
 const FloorSliderName = ref("4_Floor");
 const FloorSliderValue = ref(0); 
 
@@ -367,7 +378,7 @@ function calculateTotal(sliderKey) {
         :title="secondSliderName" 
         @update="updateValue"
       />
-      <span class="tooltip-text">How important is negating solar radiation?</span>
+      <span class="tooltip-text">How important is passive solar radiation design?</span>
     </div>
 
     <div class="tooltip-container">
@@ -375,7 +386,7 @@ function calculateTotal(sliderKey) {
         :title="thirdSliderName" 
         @update="updateValue"
       />
-      <span class="tooltip-text">How important is vertical height?</span>
+      <span class="tooltip-text">How important is view to sky?</span>
     </div>
 
     <!-- Wrapper for the third Switch with Tooltip -->
