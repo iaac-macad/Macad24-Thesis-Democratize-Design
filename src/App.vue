@@ -18,6 +18,8 @@ import { download } from "@/scripts/compute.js";
 import CollapsiblePanel from "./components/CollapsiblePanel.vue";
 import TextInput from './components/TextInput.vue';
 
+import BarChart from './components/BarChart.vue'; // Import the BarChart component
+
 import LoadingSpinner from "./components/LoadingSpinner.vue"; // Import the spinner
 
 // Import Grasshopper definition file
@@ -362,6 +364,18 @@ onUnmounted(() => {
   window.removeEventListener("compute-end", handleComputeEnd);
 });
 
+
+// Ensure metadata exists and contains valid numeric values
+const validMetadata = computed(() => {
+  if (metadata.value && metadata.value.length >= 3) {
+    return [
+      metadata.value[0]?.value ?? 0,
+      metadata.value[1]?.value ?? 0,
+      metadata.value[2]?.value ?? 0
+    ];
+  }
+  return null; // Return null if metadata is invalid or missing
+});
 // // Example usage for demonstration
 // handleCustomLog("Running compute..."); // This would be in your actual compute start logic
 // setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates compute end after 3 seconds
@@ -561,6 +575,9 @@ onUnmounted(() => {
 
         <p id="para">Number of Floors:</p>
         <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}</div>
+
+        <BarChart :metadata="validMetadata" />
+
 
       </div>
         <!-- Loading Spinner positioned in front of all content -->
