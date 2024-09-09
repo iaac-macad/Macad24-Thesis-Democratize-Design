@@ -19,6 +19,7 @@ import CollapsiblePanel from "./components/CollapsiblePanel.vue";
 import TextInput from './components/TextInput.vue';
 
 import BarChart from './components/BarChart.vue'; // Import the BarChart component
+import PieChart from './components/PieChart.vue';
 
 import LoadingSpinner from "./components/LoadingSpinner.vue"; // Import the spinner
 
@@ -330,6 +331,19 @@ function calculateTotal(sliderKey) {
   // You can add additional logic here if needed, such as updating UI elements
 }
 
+const pieChartData = computed(() => {
+  if (totalValue1.value) {
+    return [
+      { value: Number(totalValue1), name: 'Total 1 Beds' },
+      { value: Number(totalValue2), name: 'Total 2 Beds' },
+      { value: Number(totalValue3), name: 'Total 3 Beds' },
+    ];
+  }
+  return [];
+});
+
+
+
 // Reactive variable to control spinner visibility
 const isComputing = ref(false);
 
@@ -573,10 +587,11 @@ const validMetadata = computed(() => {
         <p id="para">3-bedroom apartments:</p>
         <div id="para2" v-if="metadata[2]">{{ metadata[2].value }}</div>
 
-        <p id="para">Number of Floors:</p>
-        <div id="para2" v-if="metadata[3]">{{ metadata[3].value }}</div>
-
         <BarChart :metadata="validMetadata" />
+
+
+        <PieChart :data="pieChartData" />
+
 
 
       </div>
