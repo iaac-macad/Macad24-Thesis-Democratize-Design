@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/echarts": "^4.9.22",
     "chart.js": "^4.4.4",
     "compute-rhino3d": "^0.13.0-beta",
     "csv-writer": "^1.6.0",

@@ -20,12 +20,13 @@ import TextInput from './components/TextInput.vue';
 
 import BarChart from './components/BarChart.vue'; // Import the BarChart component
 import PieChart from './components/PieChart.vue';
+import PieChart2 from './components/PieChart2.vue';
 
 import LoadingSpinner from "./components/LoadingSpinner.vue"; // Import the spinner
 
 // Import Grasshopper definition file
 // import def from './assets/osm_v16_3h.gh';
-import def from './assets/osm_v21.gh';
+import def from './assets/model_v2.gh';
 
 // Part 01: Define reactive variables for text input names and values
 const textInputName1 = ref('Building_Number');
@@ -107,6 +108,13 @@ const compute = ref(false);
 
 // Initialize cache for metadata for each slider position
 const sliderMetadataCache = ref({});  // New cache object
+
+// Reactive references for total values
+const totalValue1 = ref(0);
+const totalValue2 = ref(0);
+const totalValue3 = ref(0);
+const totalValue4 = ref(0);
+const totalValue5 = ref(0);
 
 
 
@@ -292,6 +300,8 @@ function fetchMetadata(position) {
       value1: parseFloat(metadata.value[0].value) || 0,  // Ensure the value is a number
       value2: parseFloat(metadata.value[1].value) || 0,  // Ensure the value is a number
       value3: parseFloat(metadata.value[2].value) || 0,  // Ensure the value is a number
+      value4: parseFloat(metadata.value[9].value) || 0,  // Ensure the value is a number
+      value5: parseFloat(metadata.value[10].value) || 0,  // Ensure the value is a number
     };
   } else {
     console.error('Not enough metadata available to fetch data.');
@@ -300,48 +310,96 @@ function fetchMetadata(position) {
       value1: 0,
       value2: 0,
       value3: 0,
+      value4: 0,
+      value5: 0,
     };
   }
 }
 
-/// Function to calculate the total of all cached metadata values for each column
+
+
+
+
+// Function to calculate the total of all cached metadata values for each column
 function calculateTotal(sliderKey) {
-  // Initialize totals for each metadata column
-  let totalValue1 = 0;
-  let totalValue2 = 0;
-  let totalValue3 = 0;
+  console.log('Calculating totals for slider key:', sliderKey);
+
+  // Reset totals
+  totalValue1.value = 0;
+  totalValue2.value = 0;
+  totalValue3.value = 0;
+  totalValue4.value = 0;
+  totalValue5.value = 0;
 
   // Ensure there is metadata to calculate
   if (sliderMetadataCache.value[sliderKey]) {
     // Iterate over each cached metadata entry for the slider
     Object.values(sliderMetadataCache.value[sliderKey]).forEach(metadata => {
-      totalValue1 += parseFloat(metadata.value1) || 0;
-      totalValue2 += parseFloat(metadata.value2) || 0;
-      totalValue3 += parseFloat(metadata.value3) || 0;
+      totalValue1.value += parseFloat(metadata.value1) || 0;  // Ensure numeric value
+      totalValue2.value += parseFloat(metadata.value2) || 0;  // Ensure numeric value
+      totalValue3.value += parseFloat(metadata.value3) || 0;  // Ensure numeric value
+      totalValue4.value += parseFloat(metadata.value4) || 0;  // Ensure numeric value
+      totalValue5.value += parseFloat(metadata.value5) || 0;  // Ensure numeric value
     });
   } else {
     console.warn('No metadata found for slider key:', sliderKey);
   }
 
   // Output the totals
-  console.log('Total of value1:', totalValue1);
-  console.log('Total of value2:', totalValue2);
-  console.log('Total of value3:', totalValue3);
-
-  // You can add additional logic here if needed, such as updating UI elements
+  console.log('Total of value1:', totalValue1.value);
+  console.log('Total of value2:', totalValue2.value);
+  console.log('Total of value3:', totalValue3.value);
+  console.log('Total of value4:', totalValue4.value);
+  console.log('Total of value5:', totalValue5.value);
 }
 
+
+
 const pieChartData = computed(() => {
-  if (totalValue1.value) {
-    return [
-      { value: Number(totalValue1), name: 'Total 1 Beds' },
-      { value: Number(totalValue2), name: 'Total 2 Beds' },
-      { value: Number(totalValue3), name: 'Total 3 Beds' },
-    ];
+  if (metadata.value && metadata.value.length >= 3){
+  // Check if metadata.value exists and its length is at least 3
+  return [
+    { value: parseFloat(totalValue1.value) || 0, name: 'Total 1 Beds' },
+    { value: parseFloat(totalValue2.value) || 0, name: 'Total 2 Beds' },
+    { value: parseFloat(totalValue3.value) || 0, name: 'Total 3 Beds' },
+  ];
   }
-  return [];
 });
 
+
+console.log('Total of value1:', totalValue1.value);
+console.log('Total of value2:', totalValue2.value);
+console.log('Total of value3:', totalValue3.value);
+console.log('Total of value4:', totalValue4.value);
+console.log('Total of value5:', totalValue5.value);
+
+
+// Log the values to check reactivity
+console.log('Computed pieChartData:', pieChartData.value);
+
+
+// Calculate percentage usable area
+const percentageUsable = (totalValue4.value / totalValue5.value) * 100;
+
+// Calculate percentage non-usable area
+const percentageNonUsable = 100 - percentageUsable;
+
+console.log('Percentage of usable area:', percentageUsable.toFixed(2) + '%');
+console.log('Percentage of non-usable area:', percentageNonUsable.toFixed(2) + '%');
+
+const pieChart2Data = computed(() => {
+  if (metadata.value && metadata.value.length >= 3){
+  // Calculate percentages for usable and non-usable areas
+  const percentageUsable = (totalValue4.value / totalValue5.value) * 100;
+  const percentageNonUsable = 100 - percentageUsable;
+
+  // Return data formatted for the pie chart
+  return [
+    { value: parseFloat(percentageUsable.toFixed(2)) || 0, name: 'Saleable Area' },
+    { value: parseFloat(percentageNonUsable.toFixed(2)) || 0, name: 'Non-Net Area' },
+  ];
+  }
+});
 
 
 // Reactive variable to control spinner visibility
@@ -393,6 +451,14 @@ const validMetadata = computed(() => {
 // // Example usage for demonstration
 // handleCustomLog("Running compute..."); // This would be in your actual compute start logic
 // setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates compute end after 3 seconds
+// Computed property to check for error messages in metadata[12], metadata[13], and metadata[14]
+const errorMessage = computed(() => {
+  const errors = [12, 13, 14]
+    .map(index => metadata.value[index]?.value) // Retrieve values if they exist
+    .filter(Boolean); // Filter out falsy values (e.g., undefined, null, empty string)
+
+  return errors.length > 0 ? errors.join('<br>') : 'Everything looks okay!';
+});
 
 </script>
 
@@ -578,20 +644,24 @@ const validMetadata = computed(() => {
 
       <div id="viewer" class="geometry">
         <div id="Construction" class="data1">
-        <p id="para">1-bedroom apartments:</p>
-        <div id="para2" v-if="metadata[0]">{{ metadata[0].value }}</div>
-
-        <p id="para">2-bedroom apartments:</p>
-        <div id="para2" v-if="metadata[1]">{{ metadata[1].value }}</div>
-
-        <p id="para">3-bedroom apartments:</p>
-        <div id="para2" v-if="metadata[2]">{{ metadata[2].value }}</div>
 
         <BarChart :metadata="validMetadata" />
 
 
         <PieChart :data="pieChartData" />
 
+
+        <PieChart2 :data="pieChart2Data" />
+
+        <p v-if="totalValue5 !== undefined && totalValue5.value !== undefined">
+          Total Area: {{ totalValue5.value }}
+        </p>
+        <p v-else>
+          Please wait for the compute to finish for the data to display.
+        </p>
+
+        <p id="para">Error Log:</p>
+        <div id="para2" v-html="errorMessage"></div>
 
 
       </div>
@@ -776,6 +846,8 @@ const validMetadata = computed(() => {
   border-color: white;
   background-color: white;
   position: relative; /* Add relative position for stacking context */
+  right: 0; /* Move to the right side */
+  top: 0; /* Align to the top */
   z-index: 40; /* Lower z-index to ensure it's behind the spinner */
   box-sizing: border-box; /* Ensure padding is included in width/height */
   overflow: hidden; /* Ensure no scrollbars */

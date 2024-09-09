@@ -34,7 +34,7 @@ const shouldRenderChart = computed(() => Array.isArray(props.metadata) && props.
 // Define reactive options for the chart
 const chartOptions = ref({
   title: {
-    text: 'Room Numbers',  // Title text
+    text: 'Room Numbers Per Floor',  // Title text
     left: 'center',  // Center the title horizontally
     top: '5%',  // Position it slightly from the top
     textStyle: {
@@ -101,8 +101,14 @@ const chartOptions = ref({
 watch(
   () => props.metadata,
   (newMetadata) => {
-    if (Array.isArray(newMetadata) && newMetadata.length > 0) {  // Check if metadata exists and is not empty
-      chartOptions.value.series[0].data = newMetadata; // Update with new data directly
+    if (Array.isArray(newMetadata) && newMetadata.length > 0) {
+      // Update with new data and apply colors to each bar
+      chartOptions.value.series[0].data = newMetadata.map((value, index) => ({
+        value,
+        itemStyle: {
+          color: ['rgb(255, 128, 0)', 'rgb(0, 170, 255)', 'rgb(255, 0, 255)'][index],  // Re-apply colors
+        },
+      }));
     } else {
       chartOptions.value.series[0].data = [];  // Clear the data if metadata is not present
     }
@@ -113,7 +119,7 @@ watch(
 <style scoped>
 .chart-container {
   width: 100%; /* Ensure full width */
-  height: 300px; /* Set a fixed height */
+  height: 250px; /* Set a fixed height */
   max-width: 600px; /* Optionally set a maximum width */
   margin: 0 auto; /* Center the chart */
 }

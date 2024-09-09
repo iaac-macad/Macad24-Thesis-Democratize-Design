@@ -33,25 +33,32 @@ const shouldRenderChart = computed(() => Array.isArray(props.data) && props.data
 // Debugging: Log received data
 console.log('Received data for PieChart:', props.data);
 
+// Define a color scheme similar to the bar chart
+const colorScheme = ['rgb(255, 128, 0)', 'rgb(0, 170, 255)', 'rgb(255, 0, 255)'];
+
 // Define reactive options for the semi-circle pie chart
 const chartOptions = ref({
   tooltip: {
     trigger: 'item'
   },
   legend: {
-    top: '5%',
+    bottom: '40%',  // Position the legend closer to the bottom of the container
     left: 'center',
     textStyle: {
       color: '#FFFFFF',  // White color for the legend text
       fontFamily: 'Roboto',  // Use Roboto font
-    }
+      fontSize: 10,  // Smaller font size for the legend
+    },
+    itemWidth: 10,  // Smaller width for legend symbols
+    itemHeight: 10,  // Smaller height for legend symbols
+    padding: [0, 10],  // Compact padding for the legend
   },
   series: [
     {
       name: 'Access From',
       type: 'pie',
-      radius: ['40%', '70%'],  // Donut chart style
-      center: ['50%', '70%'],  // Center vertically towards the bottom
+      radius: ['50%', '80%'],  // Adjusted radius to make the pie chart larger
+      center: ['50%', '45%'],  // Move the pie chart slightly higher to fit better
       startAngle: 180,  // Start angle for semi-circle
       endAngle: 360,  // End angle for semi-circle
       avoidLabelOverlap: false,
@@ -69,7 +76,12 @@ const chartOptions = ref({
       labelLine: {
         show: false
       },
-      data: props.data || [],  // Use data from props directly or an empty array if not provided
+      data: (props.data || []).map((item, index) => ({
+        ...item,
+        itemStyle: {
+          color: colorScheme[index % colorScheme.length],  // Apply color scheme
+        },
+      })),
     }
   ]
 });
@@ -80,7 +92,13 @@ watch(
   (newData) => {
     if (Array.isArray(newData) && newData.length > 0) {  // Check if data exists and is not empty
       console.log('Updating chart data:', newData);  // Debugging log
-      chartOptions.value.series[0].data = newData;  // Update with new data directly
+      // Update with new data and apply colors to each pie slice
+      chartOptions.value.series[0].data = newData.map((item, index) => ({
+        ...item,
+        itemStyle: {
+          color: colorScheme[index % colorScheme.length],  // Re-apply colors
+        },
+      }));
     } else {
       chartOptions.value.series[0].data = [];  // Clear the data if not present
     }
@@ -92,8 +110,8 @@ watch(
 <style scoped>
 .chart-container {
   width: 100%; /* Ensure full width */
-  height: 300px; /* Set a fixed height */
-  max-width: 600px; /* Optionally set a maximum width */
+  height: 200px; /* Set a fixed height */
+  max-width: 300px; /* Optionally set a maximum width */
   margin: 0 auto; /* Center the chart */
 }
 
