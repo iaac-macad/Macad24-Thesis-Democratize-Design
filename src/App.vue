@@ -22,7 +22,8 @@ import LoadingSpinner from "./components/LoadingSpinner.vue"; // Import the spin
 
 // Import Grasshopper definition file
 // import def from './assets/osm_v16_3h.gh';
-import def from './assets/osm_v21.gh';
+// import def from './assets/osm_v21.gh';
+import def from './assets/model_v0.gh';
 
 // Part 01: Define reactive variables for text input names and values
 const textInputName1 = ref('Building_Number');
