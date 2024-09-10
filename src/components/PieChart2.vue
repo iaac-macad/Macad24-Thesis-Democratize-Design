@@ -34,7 +34,7 @@ const shouldRenderChart = computed(() => Array.isArray(props.data) && props.data
 console.log('Received data for PieChart:', props.data);
 
 // Define a new color scheme including light grey (#4caf50)
-const colorScheme = ['grey', '#4caf50'];
+const colorScheme = ['#2196F3', '#4caf50','grey'];
 
 // Define reactive options for the semi-circle pie chart
 const chartOptions = ref({

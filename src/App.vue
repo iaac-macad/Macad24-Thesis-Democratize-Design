@@ -10,6 +10,7 @@ import SliderInput02 from "./components/SliderInput02.vue";
 import SliderInput03 from "./components/SliderInput03.vue";
 import SliderInput04 from "./components/SliderInput04.vue";
 import SliderInput05 from "./components/SliderInput05.vue";
+import SliderInput06 from "./components/SliderInput06.vue";
 import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
 // import ComputeButton from "./components/ComputeButton.vue";
 import Switch from "./components/Switch03.vue";
@@ -26,7 +27,7 @@ import LoadingSpinner from "./components/LoadingSpinner.vue"; // Import the spin
 
 // Import Grasshopper definition file
 // import def from './assets/osm_v16_3h.gh';
-import def from './assets/model_v2.gh';
+import def from './assets/model_v3.gh';
 
 // Part 01: Define reactive variables for text input names and values
 const textInputName1 = ref('Building_Number');
@@ -65,21 +66,21 @@ console.log('Text Input Names:', textInputName1.value, textInputName2.value, tex
 
 
 // Part 02 Inputs
-const firstSliderName = ref("2D_UrbanField"); // must match the Input name in your GH definition!
+const firstSliderName = ref("Urban_Context"); // must match the Input name in your GH definition!
 const firstSliderValue = ref(0.7); // default slider value
-const secondSliderName = ref("2E_RadField"); // must match the Input name in your GH definition!
+const secondSliderName = ref("Beneficial_Radiation"); // must match the Input name in your GH definition!
 const secondSliderValue = ref(0.5); // default slider value
-const thirdSliderName = ref("2F_SVField"); // must match the Input name in your GH definition!
+const thirdSliderName = ref("Sky_View_Factor"); // must match the Input name in your GH definition!
 const thirdSliderValue = ref(0.0); // default slider value
 
-const switchName = ref("2A_Init Init Aggr");
+const switchName = ref("Run_Massing_Study");
 const switchValue = ref(false);
-const switchName2 = ref("2B_Run Initial Aggr");
-const switchValue2 = ref(false);
-const switchName3 = ref("2C_Run LB");
+// const switchName2 = ref("2B_Run Initial Aggr");
+// const switchValue2 = ref(false);
+const switchName3 = ref("Run_Environmental_Analysis");
 const switchValue3 = ref(false);
 
-const switchName6 = ref("2D_Preview Massing");
+const switchName6 = ref("Preview_Massing");
 const switchValue6 = ref(false);
 
 // Part 03 Inputs
@@ -90,12 +91,12 @@ const fifthSliderValue = ref(50);
 const sixthSliderName = ref("3_bedroom");
 const sixthSliderValue = ref(50); 
 
-const switchName4 = ref("3A_Init Final Agg");
+const switchName4 = ref("Run_Building_Generation");
 const switchValue4 = ref(false);
-const switchName5 = ref("3B_Cores");
+const switchName5 = ref("Generate_Vertical_Circulation");
 const switchValue5 = ref(false);
 
-const FloorSliderName = ref("4_Floor");
+const FloorSliderName = ref("Floor_Number");
 const FloorSliderValue = ref(0); 
 
 
@@ -106,6 +107,11 @@ const path = def;
 const metadata = ref([]);
 const compute = ref(false);
 
+const seventhSliderName = ref("Target_Footprint_Area"); 
+const seventhSliderValue = ref(1000); 
+const eighthSliderName = ref("Target_GIA");
+const eigthSliderValue = ref(1800); 
+
 // Initialize cache for metadata for each slider position
 const sliderMetadataCache = ref({});  // New cache object
 
@@ -115,6 +121,7 @@ const totalValue2 = ref(0);
 const totalValue3 = ref(0);
 const totalValue4 = ref(0);
 const totalValue5 = ref(0);
+const totalValue6 = ref(0);
 
 
 
@@ -133,10 +140,16 @@ function updateValue(newValue, parameterName) {
     fifthSliderValue.value = newValue;
   } else if (parameterName === sixthSliderName.value) {
     sixthSliderValue.value = newValue;
+  } else if (parameterName === seventhSliderName.value) {
+    seventhSliderValue.value = newValue;
+  } else if (parameterName === eighthSliderName.value) {
+    eigthSliderValue.value = newValue;
+
+
   } else if (parameterName === switchName.value) {
     switchValue.value = newValue;
-  } else if (parameterName === switchName2.value) {
-    switchValue2.value = newValue;
+  // } else if (parameterName === switchName2.value) {
+  //   switchValue2.value = newValue;
   } else if (parameterName === switchName3.value) {
     switchValue3.value = newValue;
   } else if (parameterName === switchName4.value) {
@@ -203,8 +216,13 @@ const computeData = computed(() => {
     [forthSliderName.value]: Number(forthSliderValue.value),
     [fifthSliderName.value]: Number(fifthSliderValue.value),
     [sixthSliderName.value]: Number(sixthSliderValue.value),
+    [seventhSliderName.value]: Number(seventhSliderValue.value),
+    [eighthSliderName.value]: Number(eigthSliderValue.value),
+
+
+
     [switchName.value]: Boolean(switchValue.value),
-    [switchName2.value]: Boolean(switchValue2.value),
+    // [switchName2.value]: Boolean(switchValue2.value),
     [switchName3.value]: Boolean(switchValue3.value),
     [switchName4.value]: Boolean(switchValue4.value),
     [switchName5.value]: Boolean(switchValue5.value),
@@ -229,8 +247,12 @@ watch(
     forthSliderValue,
     fifthSliderValue,
     sixthSliderValue,
+    seventhSliderValue,
+    eigthSliderValue,
+
+
     switchValue,
-    switchValue2,
+    // switchValue2,
     switchValue3,
     switchValue4,
     switchValue5,
@@ -249,8 +271,10 @@ watch(
     forth,
     fifth,
     sixth,
+    seventh,
+    eigth,
     switch1,
-    switch2,
+    // switch2,
     switch3,
     switch4,
     switch5,
@@ -269,8 +293,11 @@ watch(
       forthSliderName: forth,
       fifthSliderName: fifth,
       sixthSliderName: sixth,
+      seventhSliderName: seventh,
+      eigthSliderName: eigth,
+
       switchName: switch1,
-      switchName2: switch2,
+      // switchName2: switch2,
       switchName3: switch3,
       switchName4: switch4,
       switchName5: switch5,
@@ -302,6 +329,7 @@ function fetchMetadata(position) {
       value3: parseFloat(metadata.value[2].value) || 0,  // Ensure the value is a number
       value4: parseFloat(metadata.value[9].value) || 0,  // Ensure the value is a number
       value5: parseFloat(metadata.value[10].value) || 0,  // Ensure the value is a number
+      value6: parseFloat(metadata.value[17].value) || 0,  // Ensure the value is a number
     };
   } else {
     console.error('Not enough metadata available to fetch data.');
@@ -312,6 +340,7 @@ function fetchMetadata(position) {
       value3: 0,
       value4: 0,
       value5: 0,
+      value6: 0,
     };
   }
 }
@@ -330,6 +359,7 @@ function calculateTotal(sliderKey) {
   totalValue3.value = 0;
   totalValue4.value = 0;
   totalValue5.value = 0;
+  totalValue6.value = 0;
 
   // Ensure there is metadata to calculate
   if (sliderMetadataCache.value[sliderKey]) {
@@ -340,6 +370,7 @@ function calculateTotal(sliderKey) {
       totalValue3.value += parseFloat(metadata.value3) || 0;  // Ensure numeric value
       totalValue4.value += parseFloat(metadata.value4) || 0;  // Ensure numeric value
       totalValue5.value += parseFloat(metadata.value5) || 0;  // Ensure numeric value
+      totalValue6.value += parseFloat(metadata.value6) || 0;  // Ensure numeric value
     });
   } else {
     console.warn('No metadata found for slider key:', sliderKey);
@@ -351,6 +382,7 @@ function calculateTotal(sliderKey) {
   console.log('Total of value3:', totalValue3.value);
   console.log('Total of value4:', totalValue4.value);
   console.log('Total of value5:', totalValue5.value);
+  console.log('Total of value6:', totalValue6.value);
 }
 
 
@@ -372,31 +404,40 @@ console.log('Total of value2:', totalValue2.value);
 console.log('Total of value3:', totalValue3.value);
 console.log('Total of value4:', totalValue4.value);
 console.log('Total of value5:', totalValue5.value);
+console.log('Total of value6:', totalValue6.value);
 
 
 // Log the values to check reactivity
 console.log('Computed pieChartData:', pieChartData.value);
 
 
-// Calculate percentage usable area
-const percentageUsable = (totalValue4.value / totalValue5.value) * 100;
+// Calculate percentage  areas
+const Living_space = (totalValue4.value / totalValue5.value) * 100;
 
-// Calculate percentage non-usable area
-const percentageNonUsable = 100 - percentageUsable;
+const Common_Area = (totalValue4.value / totalValue6.value) * 100;
 
-console.log('Percentage of usable area:', percentageUsable.toFixed(2) + '%');
-console.log('Percentage of non-usable area:', percentageNonUsable.toFixed(2) + '%');
+const non_net = 100 - (Common_Area + Living_space)
+
+
+
+console.log('Percentage of living space:', Living_space.toFixed(2) + '%');
+console.log('Percentage of Common_Area:',Common_Area.toFixed(2) + '%');
+console.log('Percentage of Common_Area:',non_net.toFixed(2) + '%');
 
 const pieChart2Data = computed(() => {
   if (metadata.value && metadata.value.length >= 3){
   // Calculate percentages for usable and non-usable areas
-  const percentageUsable = (totalValue4.value / totalValue5.value) * 100;
-  const percentageNonUsable = 100 - percentageUsable;
+  const Living_space = (totalValue4.value / totalValue5.value) * 100;
+
+  const Common_Area = (totalValue4.value / totalValue6.value) * 100;
+
+  const non_net = 100 - (Common_Area + Living_space)
 
   // Return data formatted for the pie chart
   return [
-    { value: parseFloat(percentageUsable.toFixed(2)) || 0, name: 'Saleable Area' },
-    { value: parseFloat(percentageNonUsable.toFixed(2)) || 0, name: 'Non-Net Area' },
+    { value: parseFloat(Living_space.toFixed(2)) || 0, name: 'Living Space' },
+    { value: parseFloat(Common_Area.toFixed(2)) || 0, name: 'Common Area' },
+    { value: parseFloat(non_net.toFixed(2)) || 0, name: 'Non-Net Area' },
   ];
   }
 });
@@ -453,7 +494,7 @@ const validMetadata = computed(() => {
 // setTimeout(() => handleCustomLog("Compute done."), 3000); // This simulates compute end after 3 seconds
 // Computed property to check for error messages in metadata[12], metadata[13], and metadata[14]
 const errorMessage = computed(() => {
-  const errors = [12, 13, 14]
+  const errors = [12, 13, 14, 15, 16]
     .map(index => metadata.value[index]?.value) // Retrieve values if they exist
     .filter(Boolean); // Filter out falsy values (e.g., undefined, null, empty string)
 
@@ -491,6 +532,15 @@ const errorMessage = computed(() => {
       <!-- Switch components with correct value and event binding -->
 
       <CollapsiblePanel title="Create Massing Volume">
+
+    <div class="tooltip-container">
+      <SliderInput06 
+        :title="seventhSliderName" 
+        @update="updateValue"
+      />
+      <span class="tooltip-text">Please enter the target for the building footprint in sqaure meters </span>
+    </div>
+
     <!-- Wrapper for each Switch with Tooltip -->
     <div class="tooltip-container">
       <Switch 
@@ -501,7 +551,7 @@ const errorMessage = computed(() => {
       <span class="tooltip-text">Turn this on when you are ready to run the initial aggregation</span>
     </div>
 
-    <p id="para"></p>
+    <!-- <p id="para"></p>
 
     <div class="tooltip-container">
       <Switch 
@@ -510,7 +560,7 @@ const errorMessage = computed(() => {
         @update="(newVal, label) => updateValue(newVal, label)"
       />
       <span class="tooltip-text">Turn this on when you are ready to generate the mass</span>
-    </div>
+    </div> -->
 
     <p id="para"></p>
 
@@ -539,7 +589,7 @@ const errorMessage = computed(() => {
       <span class="tooltip-text">How important is view to sky?</span>
     </div>
 
-    <!-- Wrapper for the third Switch with Tooltip -->
+
     <div class="tooltip-container">
       <Switch 
         :label="switchName3" 
@@ -568,6 +618,14 @@ const errorMessage = computed(() => {
   <!-- Part 03: Generate Floor Layouts -->
   <CollapsiblePanel title="Generate Floor Layouts">
     <p id="para"></p>
+
+    <div class="tooltip-container">
+      <SliderInput06 
+        :title="eighthSliderName" 
+        @update="updateValue"
+      />
+      <span class="tooltip-text">Please enter the target GIA in sqaure meters </span>
+    </div>
 
     <div class="tooltip-container">
       <SliderInput05 
@@ -653,7 +711,7 @@ const errorMessage = computed(() => {
 
         <PieChart2 :data="pieChart2Data" />
 
-        <p v-if="totalValue5 !== undefined && totalValue5.value !== undefined">
+        <p v-if="totalValue5.value !== undefined && totalValue5.value !== undefined">
           Total Area: {{ totalValue5.value }}
         </p>
         <p v-else>
