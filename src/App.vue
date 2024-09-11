@@ -11,6 +11,7 @@ import SliderInput03 from "./components/SliderInput03.vue";
 import SliderInput04 from "./components/SliderInput04.vue";
 import SliderInput05 from "./components/SliderInput05.vue";
 import SliderInput06 from "./components/SliderInput06.vue";
+import SliderInput07 from "./components/SliderInput07.vue";
 import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
 // import ComputeButton from "./components/ComputeButton.vue";
 import Switch from "./components/Switch03.vue";
@@ -507,7 +508,7 @@ const errorMessage = computed(() => {
 <template>
   <div id="appwindow">
     <div id="sidebar" class="container">
-      <img class="mainlogo" alt="logo" src="./assets/logo.png" />
+      <img class="mainlogo" alt="logo" src="./assets/logo4.png" />
       <p id="intro">This feasability tool enables you to generate modular low-income housing designs utilizing graphs and combinatorial modeling. 
         Architectural expertise, environmental simulation, and typical space requirements are embedded in the algorithm.</p>
 
@@ -620,7 +621,7 @@ const errorMessage = computed(() => {
     <p id="para"></p>
 
     <div class="tooltip-container">
-      <SliderInput06 
+      <SliderInput07 
         :title="eighthSliderName" 
         @update="updateValue"
       />

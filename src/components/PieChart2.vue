@@ -38,11 +38,21 @@ const colorScheme = ['#2196F3', '#4caf50','grey'];
 
 // Define reactive options for the semi-circle pie chart
 const chartOptions = ref({
+  // tooltip: {
+  //   trigger: 'item'
+  // },
   tooltip: {
-    trigger: 'item'
+    trigger: 'item',
+    position: function (point, params, dom, rect, size) {
+      // point[0] is the x coordinate of the mouse
+      // point[1] is the y coordinate of the mouse
+      const x = point[0] + 10; // 10px to the right of the mouse
+      const y = point[1] - 50; // aligned with the mouse vertically
+      return [x, y];
+    },
   },
   legend: {
-    bottom: '10%',  // Position the legend closer to the bottom of the container
+    bottom: '30%',  // Position the legend closer to the bottom of the container
     left: 'center',
     textStyle: {
       color: '#FFFFFF',  // White color for the legend text
