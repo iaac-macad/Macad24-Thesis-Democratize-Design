@@ -5,7 +5,7 @@ const props = defineProps(['title']);
 const titlec = ref(props.title);
 const emits = defineEmits(['update']);
 
-var sliderValue = ref(1800);
+var sliderValue = ref(5400);
 
 function sendValueUpdate() {
   emits("update", sliderValue.value, titlec.value);
@@ -18,9 +18,9 @@ function sendValueUpdate() {
       type="range"
       class="modern-range"
       min="0"
-      max="5000"
+      max="10000"
       step="1"
-      val="1800"
+      val="5400"
       v-model="sliderValue"
       @mouseup="sendValueUpdate"
     />

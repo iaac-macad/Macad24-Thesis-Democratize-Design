@@ -109,9 +109,9 @@ const metadata = ref([]);
 const compute = ref(false);
 
 const seventhSliderName = ref("Target_Footprint_Area"); 
-const seventhSliderValue = ref(1000); 
+const seventhSliderValue = ref(1700); 
 const eighthSliderName = ref("Target_GIA");
-const eigthSliderValue = ref(1800); 
+const eigthSliderValue = ref(5400); 
 
 // Initialize cache for metadata for each slider position
 const sliderMetadataCache = ref({});  // New cache object
