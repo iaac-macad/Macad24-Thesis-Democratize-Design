@@ -4,7 +4,7 @@
     <v-chart :option="chartOptions" autoresize />
   </div>
   <div v-else>
-    <p>No metadata available to display the chart.</p>
+    <p>A bar chart will be displayed here once the floor data is received.</p>
   </div>
 </template>
 

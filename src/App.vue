@@ -407,6 +407,8 @@ console.log('Total of value4:', totalValue4.value);
 console.log('Total of value5:', totalValue5.value);
 console.log('Total of value6:', totalValue6.value);
 
+const Total_Area_ = totalValue5.value
+
 
 // Log the values to check reactivity
 console.log('Computed pieChartData:', pieChartData.value);
@@ -718,11 +720,11 @@ const errorMessage = computed(() => {
 
         <PieChart2 :data="pieChart2Data" />
 
-        <p v-if="totalValue5.value !== undefined && totalValue5.value !== undefined">
-          Total Area: {{ totalValue5.value }}
+        <p v-if="Total_Area_ > 1">
+          Total Area: {{ Total_Area_ }}
         </p>
         <p v-else>
-          Please wait for the compute to finish for the data to display.
+          Please wait for compute to finish for the data to display. Move through all floor slider positions to show the total values.
         </p>
 
         <p id="para">Error Log:</p>
