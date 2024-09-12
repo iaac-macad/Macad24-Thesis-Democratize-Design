@@ -633,7 +633,9 @@ const errorMessage = computed(() => {
         :title="forthSliderName" 
         @update="updateValue"
       />
-      <span class="tooltip-text">How important is having 1-bedroom apartments?</span>
+      <span class="tooltip-text">How important is having 1-bedroom apartments?
+        <img src="./assets/Single Block 01.png" alt="Tooltip Image" style="width: 200px; height: 200px; margin-right: 5px;" />
+      </span>
     </div>
 
     <div class="tooltip-container">
@@ -641,7 +643,9 @@ const errorMessage = computed(() => {
         :title="fifthSliderName" 
         @update="updateValue"
       />
-      <span class="tooltip-text">How important is having 2-bedroom apartments?</span>
+      <span class="tooltip-text">How important is having 2-bedroom apartments?
+        <img src="./assets/Double block 01.png" alt="Tooltip Image" style="width: 200px; height: 200px; margin-right: 5px;" />
+      </span>
     </div>
 
     <div class="tooltip-container">
@@ -649,7 +653,9 @@ const errorMessage = computed(() => {
         :title="sixthSliderName" 
         @update="updateValue"
       />
-      <span class="tooltip-text">How important is having 3-bedroom apartments?</span>
+      <span class="tooltip-text">How important is having 3-bedroom apartments?
+        <img src="./assets/tripple block 02.png" alt="Tooltip Image" style="width: 200px; height: 200px; margin-right: 5px;" />
+      </span>
     </div>
 
     <!-- Wrapper for Switch with Tooltip -->
