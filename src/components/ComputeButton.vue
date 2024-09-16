@@ -5,7 +5,7 @@
       @click="toggleCompute"
       :disabled="isDisabled"
     >
-      {{ titlec }} {{ isActive ? "Stop" : "Start" }}
+      Download {{ isActive ? "Stop" : "Start" }}
     </button>
   </div>
 </template>

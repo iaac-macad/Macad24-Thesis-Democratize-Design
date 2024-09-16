@@ -13,7 +13,7 @@ import SliderInput05 from "./components/SliderInput05.vue";
 import SliderInput06 from "./components/SliderInput06.vue";
 import SliderInput07 from "./components/SliderInput07.vue";
 import DropdownSelector from "./components/DropdownSelector.vue";  // Restored DropdownSelector (commented out below)
-// import ComputeButton from "./components/ComputeButton.vue";
+import ComputeButton from "./components/ComputeButton.vue";
 import Switch from "./components/Switch03.vue";
 import Upload3dm from "./components/Upload3dm.vue";
 import { download } from "@/scripts/compute.js";
@@ -516,8 +516,8 @@ const errorMessage = computed(() => {
         title="Compute" 
         @click="() => runCompute(true)" 
         :isDisabled="isButtonDisabled" 
-      /> -->
-      
+      />
+       -->
       <p id="intro">Follow the steps below.</p>
       <CollapsiblePanel title="Select Location">
 
@@ -697,10 +697,10 @@ const errorMessage = computed(() => {
 
       <!-- ComputeButton components, ensure they are uncommented -->
 
-      <!-- <ComputeButton 
-        title="Download 3dm" 
-        @click="download('CustomStick')" 
-      >Download 3dm</ComputeButton> -->
+      <ComputeButton 
+        title="Download" 
+        @click="download('Floor Plan')" 
+      >Download 3dm</ComputeButton>
     </div>
 
 
