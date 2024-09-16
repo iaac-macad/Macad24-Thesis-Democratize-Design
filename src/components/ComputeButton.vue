@@ -30,8 +30,8 @@ button,
 .customUpload {
   width: 100%;
   font-family: 'Roboto Mono', monospace;
-  background-color: grey;
-  border: #1897ff;
+  background-color: rgb(0, 0, 0);
+  border: 2px solid #ffffff; /* Updated border property */
   color: white;
   font-weight: bold;
   padding: 10px 15px;
