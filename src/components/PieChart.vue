@@ -4,7 +4,7 @@
     <v-chart :option="chartOptions" autoresize />
   </div>
   <div v-else>
-    <p>A pie chart showing the total number of rooms will be displayed here once the floor data is received.</p>
+    <p>No data available to display the chart.</p>
   </div>
 </template>
 
@@ -38,21 +38,11 @@ const colorScheme = ['rgb(255, 128, 0)', 'rgb(0, 170, 255)', 'rgb(255, 0, 255)']
 
 // Define reactive options for the semi-circle pie chart
 const chartOptions = ref({
-  // tooltip: {
-  //   trigger: 'item'
-  // },
   tooltip: {
-    trigger: 'item',
-    position: function (point, params, dom, rect, size) {
-      // point[0] is the x coordinate of the mouse
-      // point[1] is the y coordinate of the mouse
-      const x = point[0] + 10; // 10px to the right of the mouse
-      const y = point[1] - 50; // aligned with the mouse vertically
-      return [x, y];
-    },
+    trigger: 'item'
   },
   legend: {
-    bottom: '30%',  // Position the legend closer to the bottom of the container
+    bottom: '40%',  // Position the legend closer to the bottom of the container
     left: 'center',
     textStyle: {
       color: '#FFFFFF',  // White color for the legend text
